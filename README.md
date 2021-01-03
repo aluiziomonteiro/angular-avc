@@ -62,7 +62,7 @@ Vamos criar um projeto para testar isso daí.
 
 1 - Abra o terminal e digite `ng new mat` dentro de uma pasta de sua preferência:
 
-![img/001.png](http://)
+![img/001.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/001.png)
 
 2 - Abra a pasta **/mat** e rode um `npm install`, só por segurança mesmo...
 
@@ -76,13 +76,13 @@ Vamos criar um projeto para testar isso daí.
 
 7 - Clique no edit referente ao form-field:
 
-![img/002.png](http://)
+![img/002.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/002.png)
 
 8 - O código será aberto em um editor no próprio Browser.
 
 9 - Na aba **FILES** do editor, veja o arquivo chamado **material-modules**. Este arquivo contem todos os imports que nós vamos precisar para fazer nosso form-fields funcionar:
 
-![img/003.png](http://)
+![img/003.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/003.png)
 
 9 - Copie o conteúdo deste arquivo, abra o VSCode.
 
@@ -90,7 +90,7 @@ Vamos criar um projeto para testar isso daí.
 
 11 - Esta classe se chama **DemoMaterialModule**. Pegue este nome e cole no `app.module.ts` para que o módulo do Angular Material seja importado:
 
-![img/004.png](http://)
+![img/004.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/004.png)
 
 Agora sim. Temos todos os componentes instalados em nosso projeto.
 
@@ -98,21 +98,21 @@ Agora sim. Temos todos os componentes instalados em nosso projeto.
 
 13 - Assim que compilar tudo bonitinho, vá para o Browser e acesse o `localhost:4200`:
 
-![img/005.png](http://)
+![img/005.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/005.png)
 
 Tudo tranquilo.
 
 14 - Volte para o editor do Browser e copie aquele html referente ao form:
 
-![img/006.png](http://)
+![img/006.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/006.png)
 
 15 - Substitua o conteúdo de **app.component.html** pelo conteúdo copiado. Preserve as tags `<router-outlet></router-outlet>`:
 
-![img/007.png](http://)
+![img/007.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/007.png)
 
 O form já está funcionando com base no Angular Material:
 
-![img/008.png](http://)
+![img/008.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/008.png)
 
 Viu como é fácil?
 
@@ -124,7 +124,7 @@ Faremos o mesmo com este card de cachorro [aqui.](https://material.angular.io/co
 2 - Pegue o html do card e cole no template do projeto.
 3 - Pegue também o css do cachorro e cole em **app.component.css**:
 
-![img/009.png](http://)
+![img/009.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/009.png)
 
 Como as bibliotecas já estão importadas em **app.module.ts**, é só isso que precisamos fazer.
 
