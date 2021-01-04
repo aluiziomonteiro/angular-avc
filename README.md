@@ -121,7 +121,9 @@ Vamos fazer outro exemplo.
 Faremos o mesmo com este card de cachorro [aqui.](https://material.angular.io/components/card/examples)
 
 1 - Abra o código no editor do Browser.
+
 2 - Pegue o html do card e cole no template do projeto.
+
 3 - Pegue também o css do cachorro e cole em **app.component.css**:
 
 ![img/009.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/009.png)
@@ -174,23 +176,65 @@ Vale lembrar que sem o `subscribe()`, o nosso `first` não vai obter o retorno d
 Um outro detalhe é que, diferente do Angular Material, o RxJS não necessita de instalação, pois ele já vem por padrão junto com o Angular.
 ___
 
+### Iniciando com o Projeto Prático
+___
+___
 
+Este projeto vai ser inicializado com os itens básicos já montados. Trata-se dos .html e dos .css que não fazem parte do curso de Angular.
 
+1 - Baixe o projeto inicial [aqui.](https://github.com/aluiziomonteiro/angular-avc/tree/5abcfcbc9f752f2bac6d17038577fbbf7e9311a3)
 
+2 - Entre na dentro da pasta do projeto, via terminal, e instale as dependências:
 
+![img/015.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/015.png)
 
+Note que as dependências ficam na pasta **/node-modules**. Não vamos colocá-la no github, pois ela é muito grande e iria demorar a vida do urubu para concluir o upload. Portanto, ao baixar este projeto, execute a instalação das dependências.
 
+O arquivo .gitignore está configurado para ignorar o tracking de **/node-modules**.
 
+3 - Abra o projeto no VSCodee dê um `npm start` nele. Isso vai criar um servidor interno, compilar e subir o nosso projeto:
 
+![img/016.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/016.png)
 
+4 - Assim que concluir tudo, acesse `localhost:4200` no Browser:
 
+![img/017.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/017.png)
 
+Pronto! Este é o esqueleto do projeto inicial.
 
+___
 
+### Instalando o JSON-Server
 
+O JSON-Server criará pra gente chamadas Rest para um back-end que não existe, porém ele vai retornar um Data Base JSON como se fosse realmente um server.
 
+Enfim, a diferença das chamadas Rest reais para as chamadas que vamos realizar aqui basicamente é só a URL de acesso.
 
+Vamos instalar o JSON-Server:
 
+1 - Digite `npm install -g json-server` no terminal:
 
+![img/018.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/018.png)
 
+ Obs: `-g` significa que a instalação é global, isto é, caso você precise utilizar o JSON-Server em outros projetos futuramente, ele estará disponível na sua máquina.
+ 
+Para maiores detalhes sobre a instalação, consulte o [github do JSON-Server.](https://github.com/typicode/json-server)
+
+2 - Salve o arquivo: [db.json](https://github.com/aluiziomonteiro/angular-avc/blob/master/files/db.json) na pasta raiz do projeto. Ele é uma base de dados com registros de filmes.
+
+3 - Inicialize o servidor com o comando `json-server --watch db.json` pelo terminal do VSCode.
+
+![img/019.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/019.png)
+
+4 - Dê uma verificada nas urls geradas. A primeira é uma lista de filmes e a segunda é um readme com informações gerais.
+
+5 - Tente realizar um Post com o Postman para testar:
+
+![img/020.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/020.png)
+
+6 - Acesse `http://localhost:3000/filmes` novamente e veja se o filme adicionado realmente esta lá:
+
+![img/021.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/021.png)
+
+7 - Teste as outras requisições: Get, Put e Delete.
 
