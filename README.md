@@ -133,3 +133,64 @@ Para maiores informações sobre as configurações de cada componente, você de
 Vamos iniciar nosso projeto, com alguns componentes já criados. Menubar, footer, form,  mas nada impede de você criá-los de um a um.
 
 
+
+___
+##### A Biblioteca RxJS
+
+O RxJS é uma biblioteca para programação Reativa usando Observable, para facilitar a composição de código assíncrono ou baseado em retorno de chamada.
+
+Para se aprofundar em como o RxJS Funciona, ver exemplos práticos e a utilização de cada componente, vamos acessar o site do [RxJS Learn.](https://www.learnrxjs.io/).
+
+Vamos verificar o [filter.](https://www.learnrxjs.io/learn-rxjs/operators/filtering/filter)
+
+Este filter é algo muito utilizado.
+
+Por aqui nós também podemos ver exemplos de uso e temos acesso ao editor de código do Browser.
+
+![img/010.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/010.png)
+
+Vamos verificar:
+
+![img/011.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/011.png)
+
+Agora vamos verificar o [map()](https://www.learnrxjs.io/learn-rxjs/operators/transformation/map), pois ele também é bastante utilizado:
+
+No site do LearnRxJS, abra o StackBlitz do Examplo 1 analise o código da mesma forma que foi feito com o filter anteriormente:
+
+![img/012.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/012.png)
+
+Imagine que você precise percorrer um array de filmes, pegar as datas que estão em um formato bem louco e transformá-las para o formato do seu país. Você provavelmente iria utilizar este `map()`.
+
+Vamos pegar mais um exemplo no site. Agora será o [first.](https://www.learnrxjs.io/learn-rxjs/operators/filtering/first)
+
+Abra o código do Exemplo 1:
+
+![img/013.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/013.png)
+
+Vale lembrar que sem o `subscribe()`, o nosso `first` não vai obter o retorno desejado da operação:
+
+![img/014.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/014.png)
+
+Um outro detalhe é que, diferente do Angular Material, o RxJS não necessita de instalação, pois ele já vem por padrão junto com o Angular.
+___
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
