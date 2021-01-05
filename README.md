@@ -238,3 +238,121 @@ Para maiores detalhes sobre a instalação, consulte o [github do JSON-Server.](
 
 7 - Teste as outras requisições: Get, Put e Delete.
 
+___
+
+
+
+### Conhecendo a Estrutura do Projeto
+
+Abrindo a pasta raiz do nosso projeto, temos as seguintes pastas:
+
+* **/src/app/filmes** - Aqui nós temos todos os nossos componentes de tela que são relacionados **ao filme** organizados nas pastas: **/cadastro-filmes** e **/listagem-filmes**.
+
+* **/cadastro-filmes/cadastro-filmes.component.html** - É o nosso .html de cadastro:
+![img/030.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/030.png)
+
+* **/cadastro-filmes/cadastro-filmes.component.ts** - Podemos notar que o valor do seletor começa com **dio**. Isso porque este seletor, foi criação dos caras lá da dio.
+![img/031.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/031.png)
+
+Isso nós podemos ver dentro do arquivo **/src/tslint.json**:
+
+É neste arquivo que foi indicado que todos os componentes que pertencem ao povo da dio, devem ser iniciados com o prefixo **dio**. Dessa forma é que se mantêm o controle sobre o que foi criado por eles e o que foi criado por terceiros. Isso é uma padronização:
+
+![img/032.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/032.png)
+
+Neste projeto vamos ver muitos seletores do Angular Material. Eles começam com o prefixo **<mat-algumacoisa**.
+
+* **/cadastro-filmes/cadastro-filmes.component.ts** - É o nosso componente de listagem. Dentro dele temos um monte de cards replicados. Isto é um outro problema que vamos resolver logo logo:
+
+![img/033.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/033.png)
+
+
+* **/cadastro-filmes/filmes.module.ts** - Aqui nós temos a declaração dos dois componentes de filmes e seus respectivos imports. Isso evita da gente ter que sempre que for utilizar os componentes, ter que fazer os imports repetidas vezes.
+
+![img/034.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/034.png)
+
+Nossos componentes estão segmentados no módulo e este módulo de filmes está sendo importado no módulo pai.
+
+* **/src/app/shared** - Em shared, temos dois componentes: **topo** e **rodape**:
+
+![img/027.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/027.png)
+
+Ainda em **/shared** temos a pasta outra pasta chamada **material**. Ela é responsável por carregar todos os componentes que temos no Angular Material.
+
+O Angular Material está importado em nosso **app.module.ts** e isso significa que já podemos utilizar o Angular Material em qualquer lugar da nossa aplicação tranquilamente.
+
+![img/028.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/028.png)
+
+Nunca se esqueça de que o **app.module.ts** é o nosso módulo raiz. Ele é o pai de todos os outros módulos. Isso implica que tudo o que estiver importado dentro deste módulo, vai estar disponível para a aplicação inteira.
+Note que: **app.module.ts** lembra **A PaPai module**.
+
+Ainda dentro do módulo pai, temos declarado um **providers** que serve para que o sistema converta automaticamente, todas as datas para o formato **pt**:
+
+![img/029.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/029.png)
+
+* **/src/app/component.html** - E o arquivo inicial do Angular. Dentro dele já temos uma tag `<dio-topo></dio-topo>` e é este componente que vai iniciar toda a nossa aplicação. Ele fica dentro da pasta **/app/shared/topo**.
+
+* **/app/shared/topo/topo.component.html** - Já temos definido o nosso menu lateral e o menu superior. 
+* **/app/shared/topo/topo.component.ts** - É o componente e você já pode observar que dentro dele já tem o seletor: **dio-topo** definido. 
+
+O Angular enxerga estes componentes porque eles já estão declarados no arquivo: **app.module.ts** que é o módulo raiz:
+
+![img/023.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/023.png)
+
+Caso você não declare seus componentes no **app.module.ts**:
+
+![img/024.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/024.png)
+
+O Angular não vai conseguir encontrá-lo:
+
+![img/025.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/025.png)
+
+Portanto, não esqueça de declarar os seus componentes aqui e retire o comentário que foi feito para que o web-app volte ao normal.
+
+* **/src/app/component.scss** - 
+
+* **/src/app/component.ts** -
+
+* **/src/app/module.ts** -
+
+* **/src/app/routing.module.ts** - É onde estão todas as nossas rotas:
+
+![img/026.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/026.png)
+Elas já estão funcionando pela URL do Browser e também pelo menu da nossa interface.
+
+* **/src/assets/styles** - Contém todos os estilos globais.
+
+* **/src/assets/styles/reset.scss** - Responsável pelo reset das tabelas.
+
+* **/src/assets/styles/styles.scss** - Estilo que nós realmente vamos utilizar. Temos algumas classes básicas criadas como, classe de body, de margem, classe para a parte de listagem dos nossos filmes e temos a full-width que vai ser usada quando quisermos que algum componente ocupe a tela inteira.
+
+* **/src/assets/styles/themes.scss** - Estilos iniciais do próprio tema.
+
+* **/src/assets/images** - Contém esta imagem:
+
+![img/022.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/022.png)
+
+
+##### Vamos fazer um pequeno ajuste neste app.
+
+Acontece que o **FilmesModule** está sendo importado tanto pelo módulo pai, quanto pelo módulos de rotas:
+
+![img/Diagrama1.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/Diagrama1.png)
+
+Vamos apagar o FilmesModule do módulo pai. O módulo de rotas, que também é importado pelo módulo pai, já está importando FilmesModule para nós:
+
+![img/035.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/035.png)
+
+Pronto.
+
+
+
+
+
+
+
+
+
+
+
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
