@@ -343,7 +343,152 @@ Vamos apagar o FilmesModule do módulo pai. O módulo de rotas, que também é i
 
 ![img/035.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/035.png)
 
-Pronto.
+[Código do Projeto](https://github.com/aluiziomonteiro/angular-avc/tree/fd4cf5c03f56e2c636b22a7a00395e7db542442c)
+
+___
+
+### Criando um Formulário
+
+Vamos mexer agora somente na parte de cadastro de filmes.
+
+1 - Em **/src/app/filmes/cadastro-filmes/cadastro-filmes.component.ts**, vamos ver este `FormGroup`. Aproveite e mude este nome de `options` para `cadastro`, pois faz mais sentido:
+
+![img/036.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/036.png)
+
+Quem fornece recursos para a implementação do FormGroup e de outros tipos de formulários é o `FormBuilder`.
+
+2 - Digite no Google: Angular FormBuilder para que você adquira o dom das pesquisas, ou então clique aqui: [lazySkills++.](https://angular.io/api/forms/FormBuilder)
+
+Aqui está especificando o que ele é, o que recebe e o que retorna:
+
+![img/037.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/037.png)
+
+O que vai acontecer é que nós vamos utilizar um `FormBuilder` passando um método `group()` que vai nos retornar um `FormGroup`.
+
+Aqui no site tem um exemplo de como usar um `FormControl`. Faremos a mesma coisa, mas usando o `FormGroup`. Isto porque queremos não só um input, e sim, um grupo de inputs:
+
+![img/038.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/038.png)
+
+3 - Importe o `FormBuilder` no construtor do componente **cadastro-filmes**.
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
+
+@Component({
+selector: 'dio-cadastro-filmes',
+templateUrl: './cadastro-filmes.component.html',
+styleUrls: ['./cadastro-filmes.component.scss']
+})
+export class CadastroFilmesComponent implements OnInit {
+
+cadastro: FormGroup;
+
+constructor(private fb: FormBuilder) { }
+
+ngOnInit() {
+
+this.cadastro = this.fb.group({
+
+});
+
+}
+
+}
+
+~~~
+
+Na parte sublinhada da imagem abaixo, é pedido que seja passado o nome do input, seu valor e o tipo de validação:
+
+![img/039.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/039.png)
+
+
+4 - Vamos para o template verificar o nome dos inputs e em seguida vamos passar estas informações para dentro do `group()`:
+
+![img/040.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/040.png)
+
+O código do `group()` fica da seguinte maneira:
+
+![img/041.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/041.png)
+
+Vamos compreender tudo isso:
+
+* Primeiro acontece que o `FormBuilder` vai gerar isso tudo que foi especificado pra gente. 
+
+* Se alguma condição dessas não for cumprida, o moído todo será invalidado.
+
+* Ainda vamos adicionar estas referências nos inputs do template.
+
+* O validator required é uma condição de not null.
+
+* O validator minLength e maxLength se refere ao tamanho da cadeia de caracteres.
+
+* O validator min e max se refere ao valor numérico.
+
+Agora vamos referenciar os campos no template.
+
+1 - Vamos dar um nome e dizer qual é o `formControlName` que cada input se refere:
+
+![img/042.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/042.png)
+
+2 - Reinicie o servidor e rode a aplicação:
+
+![img/043.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/043.png)
+
+Deu erro porque não definimos nosso formGroup no template. Precisamos envolver nossos inputs por um formGroup conforme o exemplo citado na própria mensagem de erro:
+
+![img/044.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/044.png)
+
+3 - Teste a aplicação novamente:
+
+![img/045.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/045.png)
+
+Os campos já estão dando sinais de que estão validando conforme nós especificamos no component. Precisamos só fazer um ajuste para o campo **nota** parar de aceitar letas.
+
+2 - Configure o campo **nota** no **template** da seguinte maneira:
+
+~~~html
+...
+<mat-form-field class="full-width">
+<input matInput 
+type="number"
+min="0"
+max="10"
+step="0.1"
+placeholder="Nota IMDb" 
+name="nota" 
+formControlName="nota">
+</mat-form-field>
+...
+~~~
+
+3 - Teste novamente a aplicação e veja se a nota está funcionando bem.
+
+Agora nós vamos submeter o nosso form com o databind`(ngSubmited)` apontando para o método `salvar()`. Isso vai enviar nosso form só de ida para o .ts dele. Criaremos, também um reset para ele:
+
+![img/046.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/046.png)
+
+4 - Agora vamos para o component criar estes dois métodos lá:
+
+![img/047.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/047.png)
+
+5 - Coloque os `type="reset"` e `type="submit"` nos botões do template:
+
+~~~typescript
+...
+<mat-card-actions>
+<button type="submit" color="accent" mat-raised-button>Salvar</button>
+<button type="reset" color="warn" mat-raised-button>Cancelar</button>
+</mat-card-actions>
+...
+~~~
+
+6 - Teste se está limpando e enviando o form para o método salvar:
+
+![img/048.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/048.png)
+
+Neste momento, o `FormGroup` já está lendo o nosso formulário.
+
 
 
 
