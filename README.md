@@ -686,31 +686,62 @@ Pronto! Tudo funcionando como foi determinado.
 
 Porém, estamos utilizando muito código ainda.
 
+___
+
+### Elvis Operator ![img/057.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/057.png)
 
 
+Note que sempre estamos testando **se o campo possui erros** e em seguida testamos novamente **se ele possui o erro de validação?**
 
+![img/058.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/058.png)
 
+Caso a gente retire a verificação `f.titulo.erros &&`
 
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors.required"> 
+Campo obrigatório 
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.minlength"> 
+O campo precisa ter no mínimo 2 caracteres 
+</mat-error>
+...
+~~~
 
+O console surta! Apontando que a propriedade `required` está `null`:
 
+![img/059.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/059.png)
 
+Nesse caso, o campo `titulo` não tem erros, mas o estado da propriedade de `required` deixou de existir. O `f.titulo.required` está tentando encontrar o valor do erro, mas ele só encontra `null`.
 
+Podemos corrigir isso colocando um ponto de interrogação após o `errors`:
 
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors?.required"> 
+Campo obrigatório 
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.minlength"> 
+O campo precisa ter no mínimo 2 caracteres 
+</mat-error>
+...
+~~~
 
+Com isso, o Angular vai executar a verificação do `required` **somente** se houver erros em `f.titulo`. Caso não ocorra erros, então retorne false.
 
+![img/060.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/060.png)
 
+1 - Vamos apagar a verificação de erro `f.titulo.errors &&` e adicionar o Elvis `?` em todas as verificações:
 
+![img/061.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/061.png)
 
+2 - Testando o formulário, podemos ver que está tudo okay:
 
+![img/062.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/062.png)
 
+Vamos utilizar o Elvis bastante para combater os `null`. ?:j
 
-
-
-
-
-
-
-
+___
 
 
 
