@@ -12,6 +12,10 @@ export class CadastroFilmesComponent implements OnInit {
 
   constructor(private fb: FormBuilder) { }
 
+  get f(){
+    return this.cadastro.controls;
+  }
+
   ngOnInit() {
 
     this.cadastro = this.fb.group({
@@ -26,16 +30,17 @@ export class CadastroFilmesComponent implements OnInit {
     });
   }
 
-  salvar(): void{ // Não retorna nada
-    if(this.cadastro.invalid){ // Se o form for inválido...
-      return; // Retorna nada
+  salvar(): void{  
+    // Clicou em salvar? Então chame o cadastro e marque todos os campos como clicados
+    this.cadastro.markAllAsTouched(); 
+    if(this.cadastro.invalid){ 
+      return; 
     }
 
-    // Pega o value do nosso cadastro e tranforme em Json e exiba via alert só pra gente fazer um teste rápido mesmo...
     alert('Sucesso!\n\n'+ JSON.stringify(this.cadastro.value, null, 4));
   }
 
-  reiniciarForm(): void{ // Também não retorna nada
-    this.cadastro.reset(); // Reinicia o cadastro
+  reiniciarForm(): void{ 
+    this.cadastro.reset();
   }
 }

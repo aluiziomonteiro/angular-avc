@@ -489,6 +489,232 @@ Agora nós vamos submeter o nosso form com o databind`(ngSubmited)` apontando pa
 
 Neste momento, o `FormGroup` já está lendo o nosso formulário.
 
+___
+
+### Adicionando Validações ao Formulário
+
+
+Não queremos que o campo de data fique aceitando qualquer coisa:
+
+![img/049.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/049.png)
+
+Vamos colocar algumas limitações no campo data do template:
+
+1 - Adicione `readonly` para que o input não aceite mais entradas.
+
+2 - Chame `picker.open()` quando o input receber um clique:
+
+~~~typescript
+...
+<mat-form-field class="full-width">
+<input matInput 
+readonly 
+[matDatepicker]="picker" 
+placeholder="Data de Lançamento" 
+name="dtLancamento" 
+formControlName="dtLancamento"
+(click)="picker.open()">
+<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+<mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+...
+~~~
+Agora sim. Ao clicar no input, nosso Datepicker será exibido e a entrada de textos está bloqueada:
+
+![img/050.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/050.png)
+
+[Mais sobre datepicker](https://material.angular.io/components/datepicker/overview)
+
+3 - Acrescente um asterisco no label dos campos que são obrigatórios. Isto é mais uma forma de alertar os usuários.
+
+Agora vamos adicionar as mensagens de erro. O Angular Material possui uns `Error messages` que podem ser exibidos com o uso do `<mat-error></mat-error>`.
+
+[Mais sobre form-field](https://material.angular.io/components/form-field/overview)
+
+4 - Coloque uma mensagem de erro para o campo Título. Faça com que o erro dispare quando o campo tiver sido clicado: "touched", quando tiver algum erro:"dirty" e quando o erro ocorrer em nosso input titulo: "get().errors". Esta linha vai dentro do `<mat-form-field>` referente ao input desejado:
+
+~~~typescript
+<mat-form-field class="full-width">
+<input matInput placeholder="Título *" name="titulo" formControlName="titulo">
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && cadastro.get('titulo').errors"> Deu erro </mat-error>
+</mat-form-field>
+~~~
+Nosso erro já é exibido:
+
+![img/051.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/051.png)
+
+Mas nós queremos especificar exatamente qual é o erro que deu em nosso form de uma maneira mais elegante. Vamos criar um método dentro do componente para fazer isso:
+
+1 - Crie um método abaixo do construtor do componente. Ele será um método `get()` genérico que vai ser utilizado por todos os inputs. O retorno dele é `controls` do nosso cadastro. Controls são todos os nossos inputs de formBuilder.
+
+~~~typescript
+...
+export class CadastroFilmesComponent implements OnInit {
+
+cadastro: FormGroup;
+
+constructor(private fb: FormBuilder) { }
+
+get f(){
+return this.cadastro.controls;
+}
+...
+~~~
+
+2 - Vamos simplificar a nossa chamada de título chamando o nosso método **f**:
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors"> Deu erro </mat-error>
+...
+~~~
+
+Nesse momento, temos uma só mensagem tratando de três erros:
+
+![img/052.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/052.png)
+
+Vamos personalizar ainda mais o tratamento desses erros.
+
+3 - Aponte para o erro de `required` e mude a mensagem informativa:
+
+~~~typescript
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.required"> Campo obrigatório </mat-error>
+~~~
+
+
+![img/053.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/053.png)
+
+
+Ainda tem um pequeno detalhe. Acontece que se nós clicarmos em Salvar com os dados inválidos, a mensagem de erro não vai aparecer. Ela só aparece quando o campo for touched.
+
+4 - Vamos fazer com que todos os campos sejam marcados como clicados dentro da função `salvar()`:
+
+![img/054.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/054.png)
+
+Agora se clicarmos em Salvar, as mensagens aparecem:
+
+![img/055.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/055.png)
+
+O erro de required já esta tratado. Vamos tratar os dois erros de length agora.
+
+5 - Adicione o `<mat-error` de `minlength` e outro de `maxlength`:
+
+~~~typescript
+...
+<mat-form-field class="full-width">
+<input matInput placeholder="Título *" name="titulo" formControlName="titulo">
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.required"> 
+Campo obrigatório 
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.minlength"> 
+O campo precisa ter no mínimo 2 caracteres 
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.titulo.errors && f.titulo.errors.maxlength"> 
+O campo pode ter no máximo 256 caracteres 
+</mat-error>
+</mat-form-field>
+... 
+~~~
+
+Teste se as validações estão passando para o required, minlength e maxleng, tanto salvando quanto sem salvar.
+
+Vamos cuidar de validar os outros campos.
+
+* O campo `urlFoto` usa minLength(10):
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.urlFoto.errors && f.urlFoto.errors.minlength"> 
+O campo precisa ter no mínimo 10 caracteres 
+</mat-error>
+...
+~~~
+
+* O `dtLancamento` é um required:
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.dtLancamento.errors && f.dtLancamento.errors.required"> 
+Campo obrigatório 
+</mat-error>
+...
+~~~
+
+* A `descricao` não tem nada.
+
+
+* A `nota` é required, min(0) e max(10):
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.nota.errors && f.nota.errors.required"> 
+Campo obrigatório
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.nota.errors && f.nota.errors.min"> 
+Valor mínimo permitido é 0
+</mat-error>
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.nota.errors && f.nota.errors.max"> 
+Valor máximo permitido é 10 
+</mat-error>
+
+...
+~~~
+
+* A `urlIMDb` é minLength(10):
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.urlIMDb.errors && f.urlIMDb.errors.minlength"> 
+O campo precisa ter no mínimo 10 caracteres 
+</mat-error>
+...
+~~~
+
+* E o `genero` é um required:
+
+~~~typescript
+...
+<mat-error *ngIf="(cadastro.touched || cadastro.dirty) && f.genero.errors && f.genero.errors.required"> 
+Campo obrigatório 
+</mat-error>
+...
+~~~
+
+Pronto! Tudo funcionando como foi determinado.
+
+![img/056.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/056.png)
+
+Porém, estamos utilizando muito código ainda.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
