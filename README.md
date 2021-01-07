@@ -823,31 +823,207 @@ Podemos criar ainda um outro método que vai testar se o campo foi clicado e se 
 
 ___
 
+### Componentizando nossos Inputs
+
+Para promover a reutilização dos nossos componentes, evitando assim a duplicação dos mesmos.
+
+1 - No terminal, digite: `ng g c shared/components/campos/input-text --nospec`
+
+Vamos receber um erro de: `More than one module matches. Use skip-import option to skip importing the component into the closest module.`. Acontece que ele não encontrou nenhum módulo para se fazer um import. Isso acontece porque quando criamos alguma coisa com o `CLI` ele faz o import automaticamente para nós. Para criar este componente ele pegaria um módulo e colocaria o componente dentro do módulo, mas o `CLI` não encontrou nada.
+
+2 - Vamos criar o módulo: `ng g m shared/components/campos --nospec`:
+
+
+![img/076.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/076.png)
+
+O Módulo foi criado e o Componente será importado automaticamente para ele.
+
+3 - Agora vamos criar os componentes: `ng g c shared/components/campos/input-text --nospec`:
+
+![img/077.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/077.png)
+
+
+Caso o Angular CLI não encontre os módulos, pode ser preciso você passar o comando : `--module` mais o caminho do módulo.
+
+Caso apareça erro no componente criado pelo Angula CLI, é porque devemos adicionar o prefixo `dio`, como foi definido no arquivo **tslink.json**.
+
+![img/078.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/078.png)
+
+Bem, nosso componente de inputText já foi importado e agora precisamos criar um componente para cada tipo de input que nós temos. O que vai acontecer é que, como todos os campos estão declarados dentro do nosso **campos.module.ts**, quando a gente for precisar dos campos, basta chamarmos este módulo que todos os inputs virão.
+
+
+1 - Digite no terminal: `ng g c shared/components/campos/input-number --nospec` para o campo inputNumber:
+
+![img/079.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/079.png)
+
+2 - Gere também o date, o textarea e o select:
+`ng g c shared/components/campos/input-date --nospec`
+`ng g c shared/components/campos/input-textarea --nospec`
+`ng g c shared/components/campos/input-select --nospec`
+
+![img/080.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/080.png)
+
+Temos tudo criado conforme os inputs que nós temos no template. Agora vamos colocar nossos códigos dentro desses caras.
+
+3 - Transfira o input de **cadastro-filmes.component.ts** ...
+
+![img/081.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/081.png)
+
+... para o **input-text.component.html**:
+
+![img/082.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/082.png)
+
+4 - Para injetar os valores dentro do nosso `input-text.component.ts`, nós vamos precisar de declarar:
+
+~~~typescript
+...
+@Input() titulo: string;
+@Input() formGroup: FormGroup;
+@Input() controlName: string;
+...
+~~~
+
+5 - Podemos retirar o ngInit(), e criar um get retornando o formControl, formGroup e controlName:
+
+~~~typescript
+import { Component, Input, OnInit } from '@angular/core';
+import { AbstractControl, FormGroup } from '@angular/forms';
+
+@Component({
+selector: 'input-text',
+templateUrl: './input-text.component.html',
+styleUrls: ['./input-text.component.scss']
+})
+export class InputTextComponent {
+
+@Input() titulo: string;
+@Input() formGroup: FormGroup;
+@Input() controlName: string;
+
+constructor() { }
+
+get formControl(): AbstractControl {
+return this.formGroup.controls[this.controlName];
+}
+}
+
+~~~
+
+6 - O **input-text.component** não vai encontrar mais o que é validação, hasErrirValidar e nem nada. Vamos passar via div, qual é o formGroup que vamos utilizar.
+
+7 - Em seguida, precisamos fazer com que o nosso input fique genérico:
+
+~~~typescript
+<div [formGroup]="formGroup">
+<mat-form-field class="full-width">
+<input matInput 
+[placeholder]="titulo" 
+[name]="controlName" 
+[formControlName]="controlName" >
+
+<mat-error *ngIf="validacao.hasErrorValidar(f.titulo, 'required')"> Campo obrigatório </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(f.titulo, 'minlength')"> O campo precisa ter no mínimo 2 caracteres </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(f.titulo, 'maxlength')"> O campo pode ter no máximo 256 caracteres </mat-error>
+</mat-form-field>
+</div>
+~~~
+
+8 - Vamos fazer os imports que estão faltando em **campos.module.ts**:
 
 
 
 
+9 - Vamos injetar a validação no componente do input-text:
+
+~~~typescript
+...
+@Component({
+selector: 'input-text',
+templateUrl: './input-text.component.html',
+styleUrls: ['./input-text.component.scss']
+})
+export class InputTextComponent {
+
+@Input() titulo: string;
+@Input() formGroup: FormGroup;
+@Input() controlName: string;
+
+constructor(public validacao: ValidarCamposService) { }
+
+get forControl(): AbstractControl {
+return this.formGroup.controls[this.controlName];
+}
+}
 
 
+~~~
+
+10 - O template do input-text, agora vamos passar `formControl` ao invés de `f.titulo`:
+
+~~~typescript
+...
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> Campo obrigatório </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'minlength')"> O campo precisa ter no mínimo 2 caracteres </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'maxlength')"> O campo pode ter no máximo 256 caracteres </mat-error>
+</mat-form-field>
+</div>
+~~~
 
 
+11 - Precisamos importar o **campos.module.ts** em **filmes.module.ts**:
+
+~~~typescript
+...
+
+@NgModule({
+imports: [
+CommonModule,
+MaterialModule,
+ReactiveFormsModule,
+FormsModule,
+CamposModule
+],
+declarations: [CadastroFilmesComponent, ListagemFilmesComponent]
+})
+export class FilmesModule { }
+
+~~~
+
+12 - Em **campos.module.ts**, devemos exportar todos os nossos inputs para que eles fiquem acessíveis:
+
+13 - Corrija os nomes que são passados nas propriedades:
+
+![img/083.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/083.png)
+
+E o Título já está componentizado e pode ser reutilizado em qualquer lugar da aplicação:
+
+![img/084.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/084.png)
+
+14 - Vamos fazer o mesmo com os inputs de texto, isto é, o input de foto e o de mdb:
+
+![img/085.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/085.png)
 
 
+Vamos fazer o mesmo com textarea.
+
+1 - Retire o texarea do template de cadastro e coloque no template de input-textarea:
+
+![img/086.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/086.png)
+
+2 - Faça a parte de `inputs()` no componente de textarea:
+
+![img/087.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/087.png)
 
 
+3 - Coloque o seletor no componente de `cadastro-filmes`:
 
+![img/088.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/088.png)
 
+4 - Teste:
 
+![img/089.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/089.png)
 
-
-
-
-
-
-
-
-
-
+___
 
 
 
