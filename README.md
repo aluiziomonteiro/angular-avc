@@ -743,6 +743,105 @@ Vamos utilizar o Elvis bastante para combater os `null`. ?:j
 
 ___
 
+### Serviço para Validação de Erros
+
+Nosso código ainda está muito sujo, cheio de verificações e de coisas replicadas:
+
+![img/063.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/063.png)
+
+Vamos retirar toda essa lógica, criar um serviço e centralizar tudo lá:
+
+1 - Instale o schematics: `npm install @schematics/angular@7.0.7 --save-dev`.
+
+* **--save-dev** - Salve nas dependências de desenvolvimento. 
+Acontece que temos um arquivo chamado **/package.json**. 
+Dentro dele, as dependências são divididas em **dependências para produção** e **dependências para desenvolvimento**.
+Estamos salvando o schematics nas dependências de produção:
+
+![img/064.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/064.png)
+
+Isso quer dizer que, esta dependência só vai ser usada em desenvolvimento. Quando formos gerar o nosso build para produção, as dependências de dev não vão existir.
+
+2 - Entre na raiz do projeto via terminal e digite:`ng g s shared/components/campos/validarCampos` para o Angular .
+**Generate a Service** para nós.
+
+* **g** - generate.
+
+* **s** - service.
+
+* **shared/components/campos/validarCampos** - caminho. 
+
+O Angular já cria pra gente o provider e injeta o mesmo no **root**. Isto significa que em qualquer lugar do sistema, nós vamos poder utilizar o **ValidarCamposService**:
+
+![img/065.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/065.png)
+
+3 - Vamos começar a implementar os nossos métodos.
+Nosso método vai receber um control e qual é o tipo de erro que queremos que ele valide. São eles os **required**, **minlength** e por ai vai.
+O `hasError` já é um método do control que vai testar se determinado input possui o erro especificado:
+
+![img/066.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/066.png)
+
+Desta forma, nosso método já está proto para verificar se o erro está acontecendo. Se sim, retorna true.
+
+4 - Precisamos adicionar, no construtor do componente de cadastro, uma chamada pública para o nosso serviço, do contrário, o nosso template não vai conseguir acessar o serviço:
+
+![img/067.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/067.png)
+
+5 - Agora vamos chamar a nossa validação no template, passando o control e o nome do erro no formato de string:
+
+![img/068.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/068.png)
+
+6 - Validação de required está funcionando bem:
+
+![img/069.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/069.png)
+
+7 - Podemos substituir os outros códigos:
+
+![img/070.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/070.png)
+
+8 - Tudo continua funcionando:
+
+![img/071.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/071.png)
+
+Podemos criar ainda um outro método que vai testar se o campo foi clicado e se está sujo. Isso reduziria ainda mais nossa expressão:
+
+9 - Vamos criar um `hasErrorValidar()` que recebe o control e o erro:
+
+![img/072.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/072.png)
+
+10 - Retire os testes de sujeira, também o teste de toque no template e, por fim, chame o `hasErrorValidar()` ao invés do `hasError()`:
+
+![img/073.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/073.png)
+
+11 - Tudo funcionando tranquilamente:
+
+![img/074.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/074.png)
+
+12 - Teste de salvamento também está okay:
+
+![img/075.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/075.png)
+
+___
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
