@@ -8,8 +8,14 @@
           [placeholder]="titulo" 
           [name]="controlName" 
           [formControlName]="controlName">
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> Campo obrigatório </mat-error>
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> Valor mínimo permitido é 0 </mat-error>
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> Valor máximo permitido é 10 </mat-error>
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> 
+            Campo obrigatório 
+          </mat-error>
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> 
+            Valor mínimo permitido é {{validacao.lengthValidar(formControl, 'min')}} 
+          </mat-error>
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> 
+            Valor máximo permitido é {{validacao.lengthValidar(formControl, 'max')}} 
+          </mat-error>
   </mat-form-field>
 </div>

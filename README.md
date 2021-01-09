@@ -823,6 +823,8 @@ Podemos criar ainda um outro método que vai testar se o campo foi clicado e se 
 
 ___
 
+
+
 ### Componentizando nossos Campos
 
 ##### Componentizando o Campo de Input
@@ -831,7 +833,7 @@ Para promover a reutilização dos nossos componentes, evitando assim a duplica�
 
 1 - No terminal, digite: `ng g c shared/components/campos/input-text --nospec`
 
-Vamos receber um erro de: `More than one module matches. Use skip-import option to skip importing the component into the closest module.`. Acontece que ele não encontrou nenhum módulo para se fazer um import. Isso acontece porque quando criamos alguma coisa com o `CLI` ele faz o import automaticamente para nós. Para criar este componente ele pegaria um módulo e colocaria o componente dentro do módulo, mas o `CLI` não encontrou nada.
+Vamos receber um erro de: `More than one module matches. Use skip-import option to skip importing the component into the closest module.` Acontece que ele não encontrou nenhum módulo para se fazer um import. Isso acontece porque quando criamos alguma coisa com o `CLI` ele faz o import automaticamente para nós. Para criar este componente ele pegaria um módulo e colocaria o componente dentro do módulo, mas o `CLI` não encontrou nada.
 
 2 - Vamos criar o módulo: `ng g m shared/components/campos --nospec`:
 
@@ -851,14 +853,14 @@ Caso apareça erro no componente criado pelo Angula CLI, é porque devemos adici
 
 ![img/078.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/078.png)
 
-Bem, nosso componente de inputText já foi importado e agora precisamos criar um componente para cada tipo de input que nós temos. O que vai acontecer é que, como todos os campos estão declarados dentro do nosso **campos.module.ts**, quando a gente for precisar dos campos, basta chamarmos este módulo que todos os inputs virão.
+Bem, nosso componente de `inputText` já foi importado e agora precisamos criar um componente para cada tipo de input que nós temos. O que vai acontecer é que, como todos os campos estão declarados dentro do nosso **campos.module.ts**, quando a gente for precisar dos campos, basta chamarmos este módulo que todos os inputs virão.
 
 
-1 - Digite no terminal: `ng g c shared/components/campos/input-number --nospec` para o campo inputNumber:
+1 - Digite no terminal: `ng g c shared/components/campos/input-number --nospec` para o campo `inputNumber`:
 
 ![img/079.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/079.png)
 
-2 - Gere também o date, o textarea e o select:
+2 - Gere também o `date`, o textarea` e o `select`:
 `ng g c shared/components/campos/input-date --nospec`
 `ng g c shared/components/campos/input-textarea --nospec`
 `ng g c shared/components/campos/input-select --nospec`
@@ -875,7 +877,7 @@ Temos tudo criado conforme os inputs que nós temos no template. Agora vamos col
 
 ![img/082.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/082.png)
 
-4 - Para injetar os valores dentro do nosso `input-text.component.ts`, nós vamos precisar de declarar:
+4 - Para injetar os valores dentro do nosso `input-text.component.ts`, é preciso declarar os seguintes inputs:
 
 ~~~typescript
 ...
@@ -885,7 +887,7 @@ Temos tudo criado conforme os inputs que nós temos no template. Agora vamos col
 ...
 ~~~
 
-5 - Podemos retirar o ngInit(), e criar um get retornando o formControl, formGroup e controlName:
+5 - Podemos retirar o `ngOnInit()`, e criar um get retornando o `formControl`, `formGroup` e `controlName`:
 
 ~~~typescript
 import { Component, Input, OnInit } from '@angular/core';
@@ -911,9 +913,9 @@ return this.formGroup.controls[this.controlName];
 
 ~~~
 
-6 - O **input-text.component** não vai encontrar mais o que é validação, hasErrirValidar e nem nada. Vamos passar via div, qual é o formGroup que vamos utilizar.
+6 - O **input-text.component** não vai encontrar mais o que é validação, `hasErrorValidar` e nem nada. Vamos passar via `<div>`, qual é o `formGroup` que vamos utilizar.
 
-7 - Em seguida, precisamos fazer com que o nosso input fique genérico:
+7 - Em seguida, precisamos fazer com que o nosso `input` fique genérico:
 
 ~~~typescript
 <div [formGroup]="formGroup">
@@ -930,12 +932,9 @@ return this.formGroup.controls[this.controlName];
 </div>
 ~~~
 
-8 - Vamos fazer os imports que estão faltando em **campos.module.ts**:
+8 - Vamos fazer os `import` que estão faltando em **campos.module.ts**:
 
-
-
-
-9 - Vamos injetar a validação no componente do input-text:
+9 - Vamos injetar a validação no componente do `input-text`:
 
 ~~~typescript
 ...
@@ -960,7 +959,7 @@ return this.formGroup.controls[this.controlName];
 
 ~~~
 
-10 - O template do input-text, agora vamos passar `formControl` ao invés de `f.titulo`:
+10 - O template do `input-text`, agora vamos passar `formControl` ao invés de `f.titulo`:
 
 ~~~typescript
 ...
@@ -991,7 +990,7 @@ export class FilmesModule { }
 
 ~~~
 
-12 - Em **campos.module.ts**, devemos exportar todos os nossos inputs para que eles fiquem acessíveis:
+12 - Em **campos.module.ts**, devemos exportar todos os nossos `inputs` para que eles fiquem acessíveis:
 
 13 - Corrija os nomes que são passados nas propriedades:
 
@@ -1001,21 +1000,19 @@ E o Título já está componentizado e pode ser reutilizado em qualquer lugar da
 
 ![img/084.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/084.png)
 
-14 - Vamos fazer o mesmo com os inputs de texto, isto é, o input de foto e o de mdb:
+14 - Vamos fazer o mesmo com os `inputs` de texto, isto é, o `input` de foto e o de IMDb:
 
 ![img/085.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/085.png)
 
+##### Componentizando o Campo TextArea.
 
-##### Componentizando o Campo Textarea.
-
-1 - Retire o texarea do template de cadastro e coloque no template de input-textarea:
+1 - Retire o `textarea` do template de cadastro e coloque no template de `input-textarea`:
 
 ![img/086.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/086.png)
 
-2 - Faça a parte de `inputs()` no componente de textarea:
+2 - Faça a parte de `inputs()` no componente de `textarea`:
 
 ![img/087.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/087.png)
-
 
 3 - Coloque o seletor no componente de `cadastro-filmes`:
 
@@ -1025,65 +1022,64 @@ E o Título já está componentizado e pode ser reutilizado em qualquer lugar da
 
 ![img/089.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/089.png)
 
-
 ##### Componentizando o Campo Number
 
-1 - Vamos para o nosso template de filmes pegar o `<mat-form-field>` referente ao campo number:
+1 - Vamos para o nosso template de filmes pegar o `<mat-form-field>` referente ao campo `number`:
 
 ![img/090.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/090.png)
 
-2 - Trasfira para o  number component e envolva por uma div passando o formGroup:
+2 - Transfira para o `number` component e envolva por uma `<div>` passando o por ela o nosso `formGroup`:
 
 ![img/091.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/091.png)
 
-3 - Passe o formControl na validação e alteres e transforme os outros campos fixos em campos genéricos:
-Os valores **min, max e steps** também precisam ser genéricos, pois conforme for a sua utilização, estes valores podem mudar.
+3 - Passe o `formControl` na validação e transforme os outros campos fixos em campos genéricos:
+Os valores `min`, `max` e `steps` também precisam ser genéricos, pois conforme for a sua utilização, estes valores podem mudar:
 
 ~~~typescript
-<div [formGroup]="formGroup">  
-  <mat-form-field class="full-width">
-    <input  matInput 
-          type="number"
-          [min]="minimo"
-          [max]="maximo"
-          [step]="step"
-          [placeholder]="titulo" 
-          [name]="controlName" 
-          [formControlName]="controlName">
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> Campo obrigatório </mat-error>
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> Valor mínimo permitido é 0 </mat-error>
-          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> Valor máximo permitido é 10 </mat-error>
-  </mat-form-field>
+<div [formGroup]="formGroup"> 
+<mat-form-field class="full-width">
+<input matInput 
+type="number"
+[min]="minimo"
+[max]="maximo"
+[step]="step"
+[placeholder]="titulo" 
+[name]="controlName" 
+[formControlName]="controlName">
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> Campo obrigatório </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> Valor mínimo permitido é 0 </mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> Valor máximo permitido é 10 </mat-error>
+</mat-form-field>
 </div>
 ~~~
 
-4 - Passe os valores do **min, max e steps** por input:
+4 - Passe os valores do `min`, `max` e `steps` via `input()`:
 
 ![img/093.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/093.png)
 
-5 - Faça a parte do number component:
+5 - Faça a parte do **number component**:
 
 ![img/092.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/092.png)
 
-6 - Nosso number já está componentizado. Basta agora chamá-lo no template de cadastro de filmes:
+6 - Nosso **number** já está componentizado. Basta agora chamá-lo no template de cadastro de filmes:
 
 ![img/094.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/094.png)
 
 
-7 - Teste se o number está recebendo os valores corretos e se está contando os steps corretamente:
+7 - Teste se o **number** está recebendo os valores corretos e se está contando os `steps` corretamente:
 
 ![img/095.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/095.png)
 
 
 ##### Componentizando o Campo Date
 
-1 - Transfira o campo date, do template de cadastro de filmes para o template de input-date:
+1 - Transfira o campo `date`, do template de cadastro de filmes para o template de `input-date`:
 
-2 - Envolva-o com a div que recebe o formGroup, generalize os campinhos de atributo e chame o formControl. Mude o tipo de erro para **required** pois é isso que precisamos verificar:
+2 - Envolva-o com a `<div>` que recebe o `formGroup`, generalize os campinhos de atributo e chame o `formControl`. Mude o tipo de erro para `required` pois é isso que precisamos verificar:
 
 ![img/096.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/096.png)
 
-3 - Crie o component de data para passar os inputs por ele:
+3 - Crie o component de data para passar os `inputs` por ele:
 
 ![img/097.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/097.png)
 
@@ -1095,29 +1091,100 @@ Os valores **min, max e steps** também precisam ser genéricos, pois conforme f
 
 ![img/099.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/099.png)
 
+##### Componentizando o Campo `Select`
 
-##### Componentizando o Campo Select
+1 - Faça o template do `select`:
 
+![img/100.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/100.png)
 
+2 - Crie o component do `select`:
 
+![img/101.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/101.png)
 
+3 - Chame o seletor do `select` no template de cadastro:
 
+![img/102.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/102.png)
 
+4 - Teste tudo:
 
-
-
-
-
-
-
-
-
-
-
+![img/103.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/103.png)
 
 
+___
+
+### Tornando as Mensagens de Erro mais Dinâmicas
+
+1 - No serviço **validar-campos**, vamos criar um novo método para validar o `length`:
+
+Este método recebe o mesmo que o `hasError` recebe, mas ele retorna um `number`. 
+Dentro dele temos uma constante que vai receber o nome do erro que está acontecendo.
+O retorno dele vai ser qualquer um dos erros especificados e, caso não ocorra nenhum dos erros, o retorno será zero:
+
+~~~typescript
+...
+hasError(control: AbstractControl, errorName: string): boolean{
+return control.hasError(errorName);
+}
+
+lengthValidar(control: AbstractControl, errorName: string): number{
+const error = control.errors[errorName];
+return error.requiredLength || error.min ||error.max || 0;
+}
+}
+~~~
+
+2 - Em nosso template de **input-number**, vamos apagar o valor numérico da frase de erro e vamos invocar nosso método via interpolação:
+
+~~~typescript
+...
+[formControlName]="controlName">
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> 
+Campo obrigatório 
+</mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> 
+Valor mínimo permitido é {{validacao.lengthValidar()}} 
+</mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> 
+Valor máximo permitido é {{validacao.lengthValidar()}} 
+</mat-error>
+...
+~~~
+
+3 - Devemos passar o `formControl` e o tipo de erro como parâmetro para o método `lengthValidar()`:
+
+~~~typescript
+...
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> 
+Campo obrigatório 
+</mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> 
+Valor mínimo permitido é {{validacao.lengthValidar(formControl, 'min')}} 
+</mat-error>
+<mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> 
+Valor máximo permitido é {{validacao.lengthValidar(formControl, 'max')}} 
+</mat-error>
+</mat-form-field>
+</div>
+~~~
 
 
+4 - Teste as validações do campo `number`:
+
+![img/104.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/104.png)
+
+5 - Faça o mesmo para o template do `input-text`, note que a validação aqui é para `minlength` e `maxlength`.
+Depois disso, o campo Título, o Link Foto e o Link IMDb devem estar validando:
+
+![img/105.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/105.png)
+
+Macumba não! Estes valores foram definidos no início do curso em: **cadastro-filmes.component.ts**.
+
+6 - Faça o mesmo para o `input-text-area`. Assim, o componente já fica preparado para receber possíveis parametrizações futuras:
+
+![img/106.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/106.png)
+7 - Teste tudo:
+
+![img/107.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/107.png)
 
 
 
