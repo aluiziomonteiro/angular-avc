@@ -1080,17 +1080,23 @@ ___
 
 ### Componentizando o Campo Date
 
+1 - Transfira o campo date, do template de cadastro de filmes para o template de input-date:
 
+2 - Envolva-o com a div que recebe o formGroup, generalize os campinhos de atributo e chame o formControl. Mude o tipo de erro para **required** pois é isso que precisamos verificar:
 
+![img/096.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/096.png)
 
+3 - Crie o component de data para passar os inputs por ele:
 
+![img/097.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/097.png)
 
+4 - Adicione o seletor ao template de cadastro de filmes:
 
+![img/098.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/098.png)
 
+5 - Teste tudo:
 
-
-
-
+![img/099.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/099.png)
 
 
 
