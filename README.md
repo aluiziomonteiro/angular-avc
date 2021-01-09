@@ -823,7 +823,9 @@ Podemos criar ainda um outro método que vai testar se o campo foi clicado e se 
 
 ___
 
-### Componentizando os Inputs
+### Componentizando nossos Campos
+
+##### Componentizando o Campo de Input
 
 Para promover a reutilização dos nossos componentes, evitando assim a duplicação dos mesmos.
 
@@ -1004,7 +1006,7 @@ E o Título já está componentizado e pode ser reutilizado em qualquer lugar da
 ![img/085.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/085.png)
 
 
-Vamos fazer o mesmo com textarea.
+##### Componentizando o Campo Textarea.
 
 1 - Retire o texarea do template de cadastro e coloque no template de input-textarea:
 
@@ -1023,10 +1025,8 @@ Vamos fazer o mesmo com textarea.
 
 ![img/089.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/089.png)
 
-___
 
-
-### Componentizando o Campo Number
+##### Componentizando o Campo Number
 
 1 - Vamos para o nosso template de filmes pegar o `<mat-form-field>` referente ao campo number:
 
@@ -1075,10 +1075,7 @@ Os valores **min, max e steps** também precisam ser genéricos, pois conforme f
 ![img/095.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/095.png)
 
 
-___
-
-
-### Componentizando o Campo Date
+##### Componentizando o Campo Date
 
 1 - Transfira o campo date, do template de cadastro de filmes para o template de input-date:
 
@@ -1097,6 +1094,37 @@ ___
 5 - Teste tudo:
 
 ![img/099.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/099.png)
+
+
+##### Componentizando o Campo Select
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
