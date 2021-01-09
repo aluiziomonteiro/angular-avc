@@ -23,29 +23,12 @@
           
 
             <dio-input-textarea titulo="Descrição" controlName="descricao" [formGroup]="cadastro"></dio-input-textarea>
+                                                
+            <dio-input-number titulo="Nota IMDb *" controlName="nota" step="0.1" [formGroup]="cadastro"></dio-input-number>
           
-    
-          <mat-form-field class="full-width">
-            <input  matInput 
-                    type="number"
-                    min="0"
-                    max="10"
-                    step="0.1"
-                    placeholder="Nota IMDb *" 
-                    name="nota" 
-                    formControlName="nota">
-                    <mat-error *ngIf="validacao.hasErrorValidar(f.nota, 'required')"> 
-                      Campo obrigatório 
-                    </mat-error>
-                    <mat-error *ngIf="validacao.hasErrorValidar(f.nota, 'min')"> 
-                      Valor mínimo permitido é 0 
-                    </mat-error>
-                    <mat-error *ngIf="validacao.hasErrorValidar(f.nota, 'max')"> 
-                      Valor máximo permitido é 10
-                    </mat-error>
-          </mat-form-field>
             <dio-input-text titulo="Link IMDb" controlName="urlIMDb" [formGroup]="cadastro"></dio-input-text>
-          <mat-form-field class="full-width">
+          
+            <mat-form-field class="full-width">
             <mat-select placeholder="Gênero *" name="genero" formControlName="genero">
               <mat-option value="Ação">Açao</mat-option>
               <mat-option value="Aventura">Aventura</mat-option>

@@ -823,7 +823,7 @@ Podemos criar ainda um outro método que vai testar se o campo foi clicado e se 
 
 ___
 
-### Componentizando nossos Inputs
+### Componentizando os Inputs
 
 Para promover a reutilização dos nossos componentes, evitando assim a duplicação dos mesmos.
 
@@ -1024,6 +1024,75 @@ Vamos fazer o mesmo com textarea.
 ![img/089.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/089.png)
 
 ___
+
+
+### Componentizando o Campo Number
+
+1 - Vamos para o nosso template de filmes pegar o `<mat-form-field>` referente ao campo number:
+
+![img/090.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/090.png)
+
+2 - Trasfira para o  number component e envolva por uma div passando o formGroup:
+
+![img/091.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/091.png)
+
+3 - Passe o formControl na validação e alteres e transforme os outros campos fixos em campos genéricos:
+Os valores **min, max e steps** também precisam ser genéricos, pois conforme for a sua utilização, estes valores podem mudar.
+
+~~~typescript
+<div [formGroup]="formGroup">  
+  <mat-form-field class="full-width">
+    <input  matInput 
+          type="number"
+          [min]="minimo"
+          [max]="maximo"
+          [step]="step"
+          [placeholder]="titulo" 
+          [name]="controlName" 
+          [formControlName]="controlName">
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'required')"> Campo obrigatório </mat-error>
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'min')"> Valor mínimo permitido é 0 </mat-error>
+          <mat-error *ngIf="validacao.hasErrorValidar(formControl, 'max')"> Valor máximo permitido é 10 </mat-error>
+  </mat-form-field>
+</div>
+~~~
+
+4 - Passe os valores do **min, max e steps** por input:
+
+![img/093.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/093.png)
+
+5 - Faça a parte do number component:
+
+![img/092.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/092.png)
+
+6 - Nosso number já está componentizado. Basta agora chamá-lo no template de cadastro de filmes:
+
+![img/094.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/094.png)
+
+
+7 - Teste se o number está recebendo os valores corretos e se está contando os steps corretamente:
+
+![img/095.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/095.png)
+
+
+___
+
+
+### Componentizando o Campo Date
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
