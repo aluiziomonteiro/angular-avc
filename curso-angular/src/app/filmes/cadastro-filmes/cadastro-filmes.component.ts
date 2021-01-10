@@ -10,6 +10,7 @@ import { ValidarCamposService } from 'src/app/shared/components/campos/validar-c
 export class CadastroFilmesComponent implements OnInit {
 
   cadastro: FormGroup;
+  generos: Array<string>; //
 
   constructor(public validacao: ValidarCamposService,
               private fb: FormBuilder) { }
@@ -28,12 +29,13 @@ export class CadastroFilmesComponent implements OnInit {
       descricao: [''],
       nota: [0, [Validators.required, Validators.min(0), Validators.max(10)]],
       urlIMDb: ['', [Validators.minLength(10)]],
-      genero: ['', [Validators.required]]
+      genero: ['', [Validators.required]] //
     });
+    // Aqui
+    this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ];
   }
 
   salvar(): void{  
-    // Clicou em salvar? Então chame o cadastro e marque todos os campos como clicados
     this.cadastro.markAllAsTouched(); 
     if(this.cadastro.invalid){ 
       return; 

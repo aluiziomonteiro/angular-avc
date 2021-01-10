@@ -1182,9 +1182,55 @@ Macumba não! Estes valores foram definidos no início do curso em: **cadastro-f
 6 - Faça o mesmo para o `input-text-area`. Assim, o componente já fica preparado para receber possíveis parametrizações futuras:
 
 ![img/106.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/106.png)
+
 7 - Teste tudo:
 
 ![img/107.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/107.png)
+
+
+___
+
+### Passando um Array com os Valores para o nosso Componente
+
+Antes de fazer com que o nosso sistema realmente comece a salvar, nós vamos fazer algumas pequena correções:
+
+1 - Na tag `form` do template **cadastro-filmes.componente.html**, coloque um `autocomplete="off"` para que ele pare de querer adivinhar o que vamos digitar nos campos e um `novalidate`, para que o `html` pare de validar. Queremos que a nossa validação predomine:
+
+![img/108.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/108.png)
+
+Agora é no `select` do template **input-select.component.html**. Vamos deixá-los dinâmicos.
+
+1 - Vamos apagar todas as opções dele e em seguida, utilizaremos o `*ngFor` para iterar nas `options` e um Data Binding `value` para pegar estas opções. O título do `select `será interpolado:
+
+![img/109.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/109.png)
+
+2 - Vamos criar um `input` para ele em **input-select.component.ts**:
+
+![img/110.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/110.png)
+
+3 - Passe o `array` por parâmetro e inicie os valores do `select` em `ngOnInit()` em **cadastro-filmes.component.ts**:
+
+![img/111.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/111.png)
+
+5 - Adicione mais uma propriedade em nosso `select` em **cadastro-filmes.component.html**:
+
+![img/112.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/112.png)
+
+
+6 - Teste o select:
+![img/113.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/113.png)
+
+Nosso `select` já está dinâmico. quando precisarmos popular ele com dados provenientes de um data base, basta adicionar os dados no array criado em **cadastro-filmes.component.ts**:
+
+![img/114.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/114.png)
+
+
+
+
+
+
+
+
 
 
 
