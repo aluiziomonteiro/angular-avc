@@ -3,21 +3,6 @@
 ___
 ___
 
-### Digital Innovation One
-
-###### *(Este material é uma transcrição modificada de uma das disciplinas que compõem o Bootcamp da Everis, oferecido por: Digital Innovation One).*
-
-* ###### *Aula ministrada por: Renan Bertoldo*
-
-* ###### *Transcrito e modificado por: Aluizio Monteiro*
-
-[Everis |]( https://www.everis.com/)
-[ DIO |](https://www.linkedin.com/school/digitalinnovation-one/about/)
-[ Renan Bertoldo |](https://www.linkedin.com/in/renan-rafael-bertoldo/)
-[ Aluizio Monteiro](https://www.linkedin.com/in/aluizio-monteiro/)
-
-___
-
 ### Objetivos
 
 * Montar um CRUD completo de filmes
@@ -1224,8 +1209,18 @@ Nosso `select` já está dinâmico. quando precisarmos popular ele com dados pro
 
 ![img/114.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/114.png)
 
+___
+
+### Nossa primeira interface e salvando os Filmes
 
 
+Vamos criar nosso serviço de CRUD dos filmes em **src/app/core**:
+
+`ng g s core/filmes --nospec`
+
+Pronto! Nosso arquivo foi criado e já vem até injetado no root:
+
+![img/114.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/115.png)
 
 
 
