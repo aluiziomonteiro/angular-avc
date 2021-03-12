@@ -1212,7 +1212,6 @@ Nosso `select` já está dinâmico. quando precisarmos popular ele com dados pro
 ___
 
 
-
 ### Nossa primeira interface e salvando os Filmes
 
 
@@ -1408,6 +1407,174 @@ Para ver se realmente deu certo, abra o nosso "banco" em `localhost:3000/filmes`
 Tudo funcionando.
 
 ** Obs:** Vamos alterar o nome da interface de `Filmes` para `Filme`. Altere tudo. Nome do arquivo, da classe e de todas as chamadas em todos os arquivos.
+
+___
+
+
+### Componente de Modal
+
+Vamos utilizar uma modal de Dialog do angular Material para ser nossa janela de confirmação.
+
+1 - Busque no Google por **Angular Material Modal** e escolha a opção de **Dialog**:
+
+![img/124.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/124.png)
+
+2 - No editor de código do site, edite o html dessa modal e teste:
+
+![img/125.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/125.png)
+
+3 - Volte para o VSCode e crie um component para que possamos colocar3 esse código lá:
+
+![img/126.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/126.png)
+`More than one module matches. Use skip-import option to skip importing the component into the closest module.`
+
+Caso o Angular não encontre o módulo principal, especifique-o:
+`ng g c shared/components/alerta --nospec --module app.module.ts`
+
+![img/127.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/127.png)
+
+4 - Copie o html do modal para dentro do html do componente criado.
+
+~~~html
+<h1 mat-dialog-title>Sucesso!</h1>
+<div mat-dialog-content>
+<p>Seu registro foi salvo com sucesso!</p>
+<!--Excluído-->
+</div>
+<div mat-dialog-actions>
+<button mat-button>No Thanks</button>
+<button mat-button cdkFocusInitial>Ok</button>
+</div>
+~~~
+
+5 - No **alerta.component.ts**, vamos alterar o seletor:
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+selector: 'dio-alerta',
+templateUrl: './alerta.component.html',
+styleUrls: ['./alerta.component.scss']
+})
+export class AlertaComponent implements OnInit {
+
+constructor() { }
+
+ngOnInit() {
+}
+}
+~~~
+
+6 - Vamos pegar o miolo do construtor do arquivo **.ts** lá do site e copiá-lo para o nosso componente. Dê um fix nos imports Dependências:
+
+![img/128.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/128.png)
+
+Por fim, nosso construtor vai ficar assim:
+
+~~~typescript
+...
+constructor(
+public dialogRef: MatDialogRef<AlertaComponent>,
+@Inject(MAT_DIALOG_DATA) public data: any) { }
+
+ngOnInit() {
+}
+}
+~~~
+
+O `MatDialogRef`, faz referência para nossa própria classe e o tipo data aqui será `any` pois não sabemos ainda qual tipo realmente ele será.
+
+7 - Vamos para o template do alerta definir onde vão ficar as nossas mensagens e botões, O código vai ficar assim:
+
+~~~typescript
+
+<h1 mat-dialog-title>{{titulo}}</h1>
+<div mat-dialog-content>
+<p>{{descricao}}</p>
+
+</div>
+<div mat-dialog-actions>
+<button mat-buttons cdkFocusInitial [mat-dialog-close]="true">{{btnSucesso}}</button>
+<button mat-button [mat-dialog-close]="false">{{btnCancelar}}</button>
+</div>
+
+~~~
+
+O `[mat-dialog-close]=""` É o que o componente que chamou o nosso modal, espera receber, assim é que ele vai saber qual dos botões recebeu o clique.
+
+8 - Vamos crias estas propriedades no arquivo .ts:
+
+![img/129.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/129.png)
+
+Note que a passagem de parâmetros dos modais é mais simples do que nos outros componentes, pois não é feita com `@Input()`.
+Sempre que quisermos utilizar a janela de modal, basta trocar estes parâmetros.
+
+Agora vamos chamar nosso modal no lugar dos alerts() em **cadastro-filmes.component.ts**.
+
+9 - Import o MaterialDialog no construtor:
+
+
+~~~typescript
+...
+export class CadastroFilmesComponent implements OnInit {
+
+cadastro: FormGroup;
+generos: Array<string>;
+
+constructor(public validacao: ValidarCamposService,
+public dialog: MatDialog,
+private fb: FormBuilder,
+private filmesService: FilmesService ) { }
+...
+~~~
+
+10 - Faça a chamada do modal no lugar do `alert`, conforme o exemplo de código que está no site.
+Dentro do `open()` vamos chamar o nosso componente do alerta:
+
+![img/130.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/130.png)
+
+Vamos testar:
+
+![img/131.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/131.png)
+
+
+Os botões ainda estão feios, vamos no nosso html:
+
+![img/132.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/132.png)
+
+Mudamos o tipo de botão, a cor e no primeiro caso, colocamos um DataBinding para fazer com que a cor do botão seja dinâmica.
+11 - Vamos aproveitar e colocar um `*ngIf` logo:
+
+~~~typescript
+
+<div mat-dialog-actions>
+<button mat-raised-button [color]="corBtn" cdkFocusInitial [mat-dialog-close]="true">{{btnSucesso}}</button>
+<button mat-raised-button color="warn" 
+[mat-dialog-close]="false"
+*ngIf="possuirBtnFechar"> {{btnCancelar}} </button>
+</div>
+~~~
+
+12 - Vamos para o **alert.component.ts** definir a cor do botão e também a propriedade possuirBtnFechar. Ela é responsável por exibir ou não o nosso botão fechar. Caso seja preciso exibir este botão, devemos então sobrescrever essa propriedade:
+
+
+![img/133.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/133.png)
+
+Agora sim, vamos sobrescrever nossos atributos:
+
+![img/134.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/134.png)
+
+Vamos testar se as nossas propriedades já estão sendo lidas pelo nosso componente:
+
+![img/135.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/135.png)
+
+
+
+
+
+
+
+
 
 
 
