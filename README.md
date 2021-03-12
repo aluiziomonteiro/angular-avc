@@ -1211,6 +1211,8 @@ Nosso `select` já está dinâmico. quando precisarmos popular ele com dados pro
 
 ___
 
+
+
 ### Nossa primeira interface e salvando os Filmes
 
 
@@ -1220,7 +1222,194 @@ Vamos criar nosso serviço de CRUD dos filmes em **src/app/core**:
 
 Pronto! Nosso arquivo foi criado e já vem até injetado no root:
 
-![img/114.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/115.png)
+![img/115.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/115.png)
+
+
+Dentro do nosso service, vamos usar o HttpClient, que é o responsável por fazer todas as nossas operações do CRUD.
+
+##### Criando o URL
+
+
+1 - Crie uma constante para armazenar o URL que nosso serviço vai utilizar para realizar as operações rest:
+
+~~~typescript
+import { Injectable } from '@angular/core';
+
+// Adicionamos uma barrinha no final para facilitar a passagens de parâmetros futuramente
+
+const URL = 'http://localhost:3000/filmes/';
+
+@Injectable({
+providedIn: 'root'
+})
+export class FilmesService {
+
+constructor() { }
+}
+~~~
+
+2 - O URL nós encontramos aqui, quando startamos o servidor mocozado:
+
+![img/116.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/116.png)
+
+
+##### Salvando
+
+
+1 - Crie o método `salvar()` com um construtor que recebe o httpClient que é o responsável por fazer a nossa comunicação.
+Este método vai receber uma interface que criaremos no próximo passo e o seu retorno, da forma que está, já será convertido para JSON:
+
+
+~~~typescript
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+//Rota
+const url = 'http://localhost:3000/filmes/';
+
+@Injectable({
+providedIn: 'root'
+})
+export class FilmesService {
+
+constructor(private http: HttpClient) { }
+salvar(filme: any): Observable<any> {
+return this.http.post<any>(url, filme);
+}
+}
+~~~
+
+2 - Crie a interface:
+
+`ng g i shared/models/filmes`
+
+
+3 - Crie os campos na interface:
+
+~~~typescript
+export interface Filmes {
+id?: number;
+titulo: string;
+urlFoto?: string;
+dtLancamento: Date;
+descricao?: string;
+nota: number;
+urlIMDb?: string;
+genero: string;
+}
+~~~
+
+Note que os campos são Case Sensitive e que o sinal de interrogação indica que o campo não é obrigatório.
+
+4 - Em **filmes.service.ts**, Mude o tipo da interface e o tipo de retorno do método `salvar()` para que receba e devolva `Filme`:
+
+
+![img/117.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/117.png)
+
+5 - Vamos mudar o nome do método salvar do **cadastro-filmes.component.ts** e no .html dele. Agora ele vai virar `submit()`.
+
+![img/118.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/118.png)
+
+![img/119.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/119.png)
+
+
+Nosso método `submit()` Verifica se os campos foram clicados, verifica se o cadastro é válido e agora sim, vamos fazer com que ele execute a ação de salvar.
+
+6 - Em **cadastro-filmes.components.ts**, Declare nosso FilmesService:
+
+~~~typescript
+...
+cadastro: FormGroup;
+generos: Array<string>;
+
+constructor(public validacao: ValidarCamposService,
+private fb: FormBuilder,
+private filmesService: FilmesService) { }
+...
+~~~
+
+7 - Crie um método exclusivo para essa classe chamado salvar(). Este método vai receber a um filme como parâmetro e vai repassá-lo para o nosso outro método salvar da classe de serviço. Por fim, vamos dar um subcribe no retorno do salvar:
+
+
+Colocamos subscribe() aqui por dois motivos:
+* 1 - O `salvar()` do service é um observable e todo Observable que não tem ninguém inscrito, simplesmente não executa.
+* 2 - O subscribe vai retornar o resultado da operação. Se der certo, ele retorna um filme e é a partir daí que nós vamos bolar as mensagens de erro, ou de sucesso para o usuário.
+
+~~~typescript
+...
+reiniciarForm(): void{ 
+this.cadastro.reset();
+}
+
+private salvar(filme: Filmes): void {
+// Coloque o filme no método salvar da classe filmesService.
+this.filmesService.salvar(filme).subscribe();
+}
+}
+~~~
+
+8 - Vamos tratar o retorno:
+
+~~~typescript
+...
+private salvar(filme: Filmes): void {
+// Coloque o filme no método salvar da classe filmesService.
+this.filmesService.salvar(filme).subscribe(() => {
+alert('Sucesso');
+},
+() => {
+alert('Erro ao salvar');
+});
+}
+}
+~~~
+
+9 - Agora devemos chamar o `salvar()`, dentro do `submit()`:
+
+
+~~~typescript
+...
+submit(): void{ 
+this.cadastro.markAllAsTouched(); 
+if(this.cadastro.invalid){ 
+return; 
+}
+
+const filme = this.cadastro.getRawValue() as Filmes;
+this.salvar(filme);
+
+//alert('Sucesso!\n\n'+ JSON.stringify(this.cadastro.value, null, 4));
+}
+...
+~~~
+
+* **getRawValue()** - Pega o valor de todas as linhas do nosso cadastro de filmes.
+* **as Filmes** - Certifica de que os valores são do tipo Filme.
+
+Teste a aplicação:
+
+![img/120.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/120.png)
+
+Deu erro de `NullInjectorError: No provider for HttpClient!` e isso foi porque a aplicação precisa saber que estamos trabalhando com o Módulo `HttpClient`. Todo nosso sistema vai usar HttpClientModule para acessar o banco. Por isso vamos importar esse carinha no módulo raiz:
+
+![img/121.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/121.png)
+
+Teste novamente para ver se o erro sumiu e aproveite para salvar um filme:
+
+![img/122.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/122.png)
+
+Status 201!
+
+Para ver se realmente deu certo, abra o nosso "banco" em `localhost:3000/filmes`:
+
+![img/123.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/123.png)
+
+Tudo funcionando.
+
+** Obs:** Vamos alterar o nome da interface de `Filmes` para `Filme`. Altere tudo. Nome do arquivo, da classe e de todas as chamadas em todos os arquivos.
+
+
 
 
 
