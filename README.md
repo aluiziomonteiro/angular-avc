@@ -1569,6 +1569,7 @@ Vamos testar se as nossas propriedades já estão sendo lidas pelo nosso compone
 ![img/135.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/135.png)
 
 
+___
 
 
 
@@ -1576,16 +1577,198 @@ Vamos testar se as nossas propriedades já estão sendo lidas pelo nosso compone
 
 
 
+### Passando configurações para a nossa modal
 
 
 
+Vamos fazer com que as mensagens de retorno do modal realizem alguma ação:
+
+1 - Crie uma interface chamada **alerta**:
+`ng g i shared/models/alerta --nospec`
+
+2 - Defina os campos do nosso **alerta.ts** na interface e coloque todos como opcionais:
+
+~~~typescript
+
+export interface Alerta {
+titulo?: string;
+descricao?: string;
+btnSucesso?: string;
+btnCancelar?: string;
+corBtn?: string;
+possuirBtnFechar?: boolean;
+}
+
+~~~
+
+3 - No construtor do **alerta.component.ts**, mude o data, de `any`, para `Alerta` e passe a chamar os atributos de `ngOnInit()` pela interface:
+
+~~~typescript
+
+constructor(
+public dialogRef: MatDialogRef<AlertaComponent>,
+@Inject(MAT_DIALOG_DATA) public data: Alerta) { }
+
+ngOnInit() {
+
+if (this.data){ // se existe o data
+//veja se os campos estão preenchidos:
+//titulo é igual ao data.titulo se ele existir ou então, ele vai ser titulo mesmo
+this.alerta.titulo = this.data.titulo || this.alerta.titulo;
+this.alerta.descricao = this.data.descricao || this.alerta.descricao;
+this.alerta.btnSucesso = this.data.btnSucesso || this.alerta.btnSucesso;
+this.alerta.btnCancelar = this.data.btnCancelar || this.alerta.btnCancelar;
+this.alerta.corBtn = this.data.corBtn || this.alerta.corBtn;
+this.alerta.possuirBtnFechar = this.data.possuirBtnFechar || this.alerta.possuirBtnFechar;
+}
+}
+}
+~~~
+
+4 - Atualize os atributos no **alerta.component.html**:
+
+~~~html
+
+<h1 mat-dialog-title>{{alerta.titulo}}</h1>
+<div mat-dialog-content>
+<p>{{alerta.descricao}}</p>
+
+</div>
+<div mat-dialog-actions>
+<button mat-raised-button [color]="alerta.corBtn" 
+cdkFocusInitial [mat-dialog-close]="true">{{alerta.btnSucesso}}
+</button>
+<button mat-raised-button color="warn" 
+[mat-dialog-close]="false"
+*ngIf="alerta.possuirBtnFechar"> {{alerta.btnCancelar}} 
+</button>
+</div>
+
+~~~
 
 
+5 - Crie uma constante no método `salvar()` para alterar as informações dos botões:
+
+~~~typescript
+...
+
+private salvar(filme: Filme): void {
+this.filmesService.salvar(filme).subscribe(() => {
+const config = {
+data: {
+btnSucesso: 'ir para a listagem',
+btnCancelar: 'Cadastrar um novo filme',
+possuirBtnFechar: true
+} as Alerta
+};
+const dialogRef = this.dialog.open(AlertaComponent, config);
+},
+() => {
+...
 
 
+~~~
 
 
+Teste a aplicação:
 
+![img/136.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/136.png)
+
+Rodar rodou, mais ficou mais feio do que briga de foice entre bêbados. Vamos mudar esse botão.
+
+1 - Adicione mais dois atributos na interface para que possamos definir as cores dos botões:
+
+~~~typescript
+export interface Alerta {
+titulo?: string;
+descricao?: string;
+btnSucesso?: string;
+btnCancelar?: string;
+corBtnSucesso?: string;
+corBtnCancelar?: string;
+possuirBtnFechar?: boolean;
+}
+
+~~~
+
+2 - Sette as cores no componente:
+
+~~~typescript
+...
+export class AlertaComponent implements OnInit {
+
+alerta = { 
+titulo : 'Sucesso',
+descricao : 'Seu registro foi salvo com sucesso',
+btnSucesso : 'OK',
+btnCancelar : 'Cancelar',
+corBtnSucesso: 'accent', // <--
+corBtnCancelar: 'warn', // <--
+possuirBtnFechar : false,
+} as Alerta;
+
+constructor(
+public dialogRef: MatDialogRef<AlertaComponent>,
+@Inject(MAT_DIALOG_DATA) public data: Alerta) { }
+
+ngOnInit() {
+
+if (this.data){ // se existe o data
+//veja se os campos estão preenchidos:
+//titulo é igual ao data.titulo se ele existir ou então, ele vai ser titulo mesmo
+this.alerta.titulo = this.data.titulo || this.alerta.titulo;
+this.alerta.descricao = this.data.descricao || this.alerta.descricao;
+this.alerta.btnSucesso = this.data.btnSucesso || this.alerta.btnSucesso;
+this.alerta.btnCancelar = this.data.btnCancelar || this.alerta.btnCancelar;
+this.alerta.corBtnSucesso = this.data.corBtnSucesso || this.alerta.corBtnSucesso; // <--
+this.alerta.corBtnCancelar = this.data.corBtnCancelar || this.alerta.corBtnCancelar; // <--
+this.alerta.possuirBtnFechar = this.data.possuirBtnFechar || this.alerta.possuirBtnFechar;
+}
+}
+}
+~~~
+
+3 - Adicione estes valores no html:
+~~~html
+<h1 mat-dialog-title>{{alerta.titulo}}</h1>
+<div mat-dialog-content>
+<p>{{alerta.descricao}}</p>
+
+</div>
+<div mat-dialog-actions>
+<button mat-raised-button [color]="alerta.corBtnSucesso" 
+cdkFocusInitial [mat-dialog-close]="true">{{alerta.btnSucesso}}
+</button>
+<button mat-raised-button [color]="alerta.corBtnCancelar" 
+[mat-dialog-close]="false"
+*ngIf="alerta.possuirBtnFechar"> {{alerta.btnCancelar}} 
+</button>
+</div>
+~~~
+
+4 - Passe a cor do btn no método `Salvar()`:
+
+~~~typescript
+...
+private salvar(filme: Filme): void {
+this.filmesService.salvar(filme).subscribe(() => {
+const config = {
+data: {
+btnSucesso: 'ir para a listagem',
+btnCancelar: 'Cadastrar um novo filme',
+corBtnCancelar: 'primary',
+possuirBtnFechar: true
+} as Alerta
+};
+...
+~~~
+
+Melhorou um pouco:
+
+![img/137.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/137.png)
+
+---
+### Pegando e tratando o retorno da modal
 
 
 
