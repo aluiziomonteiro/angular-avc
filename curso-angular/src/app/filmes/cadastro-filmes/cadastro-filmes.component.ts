@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { FilmesService } from 'src/app/core/filmes.service';
 import { AlertaComponent } from 'src/app/shared/components/alerta/alerta.component';
 import { ValidarCamposService } from 'src/app/shared/components/campos/validar-campos.service';
@@ -18,9 +19,11 @@ export class CadastroFilmesComponent implements OnInit {
   generos: Array<string>;
 
   constructor(public validacao: ValidarCamposService,
-    public dialog: MatDialog,
+              public dialog: MatDialog,
               private fb: FormBuilder,
-              private filmesService: FilmesService ) { }
+              private filmesService: FilmesService, 
+              private router: Router // <--
+              ) { }
 
   get f(){
     return this.cadastro.controls;
@@ -59,7 +62,8 @@ export class CadastroFilmesComponent implements OnInit {
   }
 
   private salvar(filme: Filme): void {
-    this.filmesService.salvar(filme).subscribe(() => {
+    this.filmesService.salvar(filme).subscribe(() => { 
+      // Configuração do alerta
       const config = {
         data: {
           btnSucesso:  'ir para a listagem',
@@ -68,10 +72,29 @@ export class CadastroFilmesComponent implements OnInit {
           possuirBtnFechar: true
         } as Alerta
       };
+      // Ao abrir, use O AlertaComponent com as configurações definidas acima.
       const dialogRef = this.dialog.open(AlertaComponent, config);
+
+      // Após fechar, pegue o valor da opcao e tome uma rota com base nesse valor.
+      dialogRef.afterClosed().subscribe((opcao: boolean) => {
+        if (opcao ){
+          this.router.navigateByUrl('filmes');
+        } else {
+          this.reiniciarForm();
+        }
+      })
     },
     () => {
-      alert('Erro ao salvar');
+      const config = {
+        data: {
+          titulo: 'Erro ao salvar o registro!',
+          descricao: 'Não conseguimos salvar o seu registro. Tente mais tarde!',
+          corBtnSucesso: 'warn',
+          btnSucesso:  'Fechar'
+        } as Alerta
+      };
+      // Abra o dialog usando o nosso componente de alerta e com as configurações que definimos
+      this.dialog.open(AlertaComponent, config);
     });
   }
 }

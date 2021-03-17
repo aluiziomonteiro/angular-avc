@@ -3,26 +3,27 @@
 ___
 ___
 
-### Objetivos
+### Preparando-se para o conteúdo do projeto
+##### Objetivos
 
 * Montar um CRUD completo de filmes
 * Cadastrar, listar, editar, excluir
 * Componentizar todos os elementos
 * Criar serviços para consumir os filmes
  
-### Requisitos Básicos
+##### Requisitos Básicos
 
  * Curso de Angular 8 Básico.
  * Curso de JavaScript ES6 Essencial.
  * Conhecimentos de Github.
 
-### Ambiente
+##### Ambiente
 
  * Node 11.
  * Angular 8.
  * Visual Studio Code.
 
-### Bibliotecas necessárias
+##### Bibliotecas necessárias
 
 * **Angular Material:** Especificação padronizada de interface da Google.
 
@@ -162,8 +163,7 @@ Um outro detalhe é que, diferente do Angular Material, o RxJS não necessita de
 ___
 
 ### Iniciando com o Projeto Prático
-___
-___
+##### Clonando projeto inicial do GitHub
 
 Este projeto vai ser inicializado com os itens básicos já montados. Trata-se dos .html e dos .css que não fazem parte do curso de Angular.
 
@@ -189,7 +189,7 @@ Pronto! Este é o esqueleto do projeto inicial.
 
 ___
 
-### Instalando o JSON-Server
+##### Instalando o JSON-Server
 
 O JSON-Server criará pra gente chamadas Rest para um back-end que não existe, porém ele vai retornar um Data Base JSON como se fosse realmente um server.
 
@@ -227,7 +227,7 @@ ___
 
 
 
-### Conhecendo a Estrutura do Projeto
+##### Explicando estrutura inicial do projeto
 
 Abrindo a pasta raiz do nosso projeto, temos as seguintes pastas:
 
@@ -332,7 +332,10 @@ Vamos apagar o FilmesModule do módulo pai. O módulo de rotas, que também é i
 
 ___
 
-### Criando um Formulário
+
+### Criando um formulário reativo
+
+##### Criando um Formulário
 
 Vamos mexer agora somente na parte de cadastro de filmes.
 
@@ -476,7 +479,7 @@ Neste momento, o `FormGroup` já está lendo o nosso formulário.
 
 ___
 
-### Adicionando Validações ao Formulário
+##### Adicionando Validações ao Formulário
 
 
 Não queremos que o campo de data fique aceitando qualquer coisa:
@@ -673,7 +676,7 @@ Porém, estamos utilizando muito código ainda.
 
 ___
 
-### Elvis Operator ![img/057.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/057.png)
+##### Elvis Operator ![img/057.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/057.png)
 
 
 Note que sempre estamos testando **se o campo possui erros** e em seguida testamos novamente **se ele possui o erro de validação?**
@@ -728,7 +731,7 @@ Vamos utilizar o Elvis bastante para combater os `null`. ?:j
 
 ___
 
-### Serviço para Validação de Erros
+##### Serviço para Validação de Erros
 
 Nosso código ainda está muito sujo, cheio de verificações e de coisas replicadas:
 
@@ -1097,7 +1100,7 @@ type="number"
 
 ___
 
-### Tornando as Mensagens de Erro mais Dinâmicas
+##### Tornando as Mensagens de Erro mais Dinâmicas
 
 1 - No serviço **validar-campos**, vamos criar um novo método para validar o `length`:
 
@@ -1175,7 +1178,7 @@ Macumba não! Estes valores foram definidos no início do curso em: **cadastro-f
 
 ___
 
-### Passando um Array com os Valores para o nosso Componente
+##### Passando um Array com os Valores para o nosso Componente
 
 Antes de fazer com que o nosso sistema realmente comece a salvar, nós vamos fazer algumas pequena correções:
 
@@ -1211,8 +1214,9 @@ Nosso `select` já está dinâmico. quando precisarmos popular ele com dados pro
 
 ___
 
+### Criando serviços e tratamento de retorno da modal
 
-### Nossa primeira interface e salvando os Filmes
+##### Nossa primeira interface e salvando os Filmes
 
 
 Vamos criar nosso serviço de CRUD dos filmes em **src/app/core**:
@@ -1411,7 +1415,7 @@ Tudo funcionando.
 ___
 
 
-### Componente de Modal
+##### Componente de Modal
 
 Vamos utilizar uma modal de Dialog do angular Material para ser nossa janela de confirmação.
 
@@ -1575,9 +1579,7 @@ ___
 
 
 
-
-
-### Passando configurações para a nossa modal
+##### Passando configurações para a nossa modal
 
 
 
@@ -1768,7 +1770,146 @@ Melhorou um pouco:
 ![img/137.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/137.png)
 
 ---
-### Pegando e tratando o retorno da modal
+##### Pegando e tratando o retorno da modal
+
+
+Em **cadastro-filmes.component**, no método `salvar()`, nós temos um dialog que está abrindo nosso modal:
+
+~~~typescript
+const dialogRef = this.dialog.open(AlertaComponent, config);
+~~~
+
+Ao verificar o exemplo no site, podemos ver que eles utilizam também, um `afterClosed().subscribe()`, Ele foi "subscribido()" para que possamos obter o resultado depois que o dialog for fechado.
+
+![img/138.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/138.png)
+
+
+Vamos fazer o mesmo em nosso código. 
+1 - Adicione a seguinte linha ao nosso método salvar para que o Angular informe pra gente o que aconteceu depois que o modal foi fechado:
+
+~~~typescript
+dialogRef.afterClosed().subscribe()
+~~~
+
+Sabe aquele `[mat-dialog-close]="boolean"` que foi criado no **alerta.component.html**conforme está na imagem logo abaixo:
+
+![img/139.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/139.png)
+
+Então, nosso `subscribe()` vai receber ele como parâmetro:
+
+~~~typescript
+// Recebe o mat-dialog-close
+dialogRef.afterClosed().subscribe((opcao: boolean))
+~~~
+
+Agora vamos precizar do `router`, porque é o seguinte: Se a `opcao` for `true`, então devemos pegar a rota da listagem de filmes. Se for `false`, limpe o formulário de cadastro para que se possa cadastrar um novo filme.
+
+2 - Chame a router no construtor:
+
+![img/140.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/140.png)
+
+3 - Faça um `if()` para definir o que fazer baseado no valor do `opcao`:
+
+~typescript
+...
+
+// Após fechar, pegue o valor da `opcao` e tome uma rota com base nesse valor.
+dialogRef.afterClosed().subscribe((opcao: boolean) => {
+if (opcao ){
+this.router.navigateByUrl('filmes');
+} else {
+this.reiniciarForm();
+}
+}
+...
+~~~
+
+4 - Cadastre um filme e teste os botões do modal. Os dois!
+
+
+Uma vez tudo certo, vamos agora para nossa configuração de erro.
+
+1 - Defina as configurações do nosso alerta:
+
+~~~typescript
+
+...
+() => {
+const config = {
+data: {
+titulo: 'Erro ao salvar o registro!',
+descricao: 'Não conseguimos salvar o seu registro. Tente mais tarde!',
+corBtnSucesso: 'warn',
+btnSucesso: 'Fechar'
+} as Alerta
+};
+});
+...
+~~~
+
+
+2 - Vamos chamar nosso alerta. Não precisa atribuir a uma variável, não queremos saber o retorno dela e não vai acontecer nenhuma ação com ela:
+
+O método `salvar()` ficou assim:
+
+~~~typescript
+private salvar(filme: Filme): void {
+this.filmesService.salvar(filme).subscribe(() => { 
+// Configuração do alerta
+const config = {
+data: {
+btnSucesso: 'ir para a listagem',
+btnCancelar: 'Cadastrar um novo filme',
+corBtnCancelar: 'primary',
+possuirBtnFechar: true
+} as Alerta
+};
+// Ao abrir, use O AlertaComponent com as configurações definidas acima.
+const dialogRef = this.dialog.open(AlertaComponent, config);
+
+// Após fechar, pegue o valor da opcao e tome uma rota com base nesse valor.
+dialogRef.afterClosed().subscribe((opcao: boolean) => {
+if (opcao ){
+this.router.navigateByUrl('filmes');
+} else {
+this.reiniciarForm();
+}
+})
+},
+() => {
+const config = {
+data: {
+titulo: 'Erro ao salvar o registro!',
+descricao: 'Não conseguimos salvar o seu registro. Tente mais tarde!',
+corBtnSucesso: 'warn',
+btnSucesso: 'Fechar'
+} as Alerta
+};
+// Abra o dialog usando o nosso componente de alerta e com as configurações que definimos
+this.dialog.open(AlertaComponent, config);
+});
+}
+~~~
+
+Teste a aplicação da seguinte maneira:
+
+1 - Abra a tela de cadastro de filmes.
+2 - Derrube o servidor.
+3 - Cadastre e salve um novo filme:
+
+O resultado deve ser o seguinte:
+
+![img/141.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/141.png)
+
+
+
+
+
+
+
+
+
+
 
 
 
