@@ -1810,7 +1810,7 @@ Agora vamos precizar do `router`, porque é o seguinte: Se a `opcao` for `true`,
 
 3 - Faça um `if()` para definir o que fazer baseado no valor do `opcao`:
 
-~typescript
+~~~typescript
 ...
 
 // Após fechar, pegue o valor da `opcao` e tome uma rota com base nesse valor.
@@ -1900,6 +1900,134 @@ Teste a aplicação da seguinte maneira:
 O resultado deve ser o seguinte:
 
 ![img/141.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/141.png)
+
+___
+
+### Listagem de resultados e melhoria de performance
+
+##### Buscando e listando os filmes
+
+
+Vamos tratar da listagem de filmes do nosso projeto.
+
+1 - Em **listagem-filmes.component.html**, vamos apagar a `class="example-header-image"` e retire todos os dados duplicados:
+
+~~~html
+<mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
+<div class="home-content">
+
+  <mat-card class="home-card">
+    <mat-card-header>
+      <div mat-card-avatar ></div>
+      <mat-card-title>Angular Material @ngrx</mat-card-title>
+      <mat-card-subtitle>Check this Home</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="../assets/images/angular-material-post.png" alt="Angular Material 7">
+    <mat-card-content>
+      <p>
+        Angular Material with @ngrx and lazy loading, click OPEN button then
+        you can see sidenav content (with the current store value)
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button color="accent"  mat-raised-button>OPEN</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+~~~
+
+2 - Em **core/filmes-service.ts**, vamos criar uma nova consulta para listar os filmes. Ela retorna um observable contendo um array de filmes:
+
+~~~typescript
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Filme } from '../shared/models/filme';
+
+const url = 'http://localhost:3000/filmes/';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FilmesService {
+
+  constructor(private http: HttpClient) { }
+  
+  salvar(filme: Filme): Observable<Filme> {
+    return this.http.post<any>(url, filme);
+  }
+
+  listar(): Observable<Filme[]>{
+    return this.http.get<Filme[]>(url);
+  }
+}
+
+~~~
+
+3 - Em **listagem-filmes.component.ts**, vamos declarar no construtor o FilmesService
+
+`constructor(private filmesService: FilmesService){ }`
+
+4 - Precisamos criar uma variável do tipo Filme para receber nosso array de filmes:
+
+`filmes: Filme[];`
+
+5 - Agora vamos listar os filmes dentro do `ngOnInit()`:
+
+~~~typescript
+...
+ngOnInit() {
+    this.filmesService.listar().subscribe((filmes: Filme[]) => this.filmes = filmes)
+  }
+...
+~~~
+
+Ao carregar o nosso componente de listagem, O construtor vai buscar o nosso filmesService e após a nossa tela ter sido inicializada o `this.filmes`Service.listar()` vai realizar a nossa consulta pedindo para retornar a nossa lista. O subscribe()` está ali para ser informado quando esse array de filmes for retornado. Por fim, quando este array de filmes for retornado, vamos atribuir ele ao nosso array de filmes, e isso vai atualiza-lo. Sem o subscribe, esta linha de código nunca seria executada.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### Scroll infinito
+##### Criando nosso formulário de filtro
+##### Fazendo a ordenação e filtragem
+##### Utilizando HttpParams
+##### NG - template e melhoria de performance
+
+
+### Finalizando o projeto prático
+
+
+
+
+
+
+
+
+
+
 
 
 
