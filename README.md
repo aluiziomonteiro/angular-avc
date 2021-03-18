@@ -1676,7 +1676,7 @@ Teste a aplicação:
 
 ![img/136.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/136.png)
 
-Rodar rodou, mais ficou mais feio do que briga de foice entre bêbados. Vamos mudar esse botão.
+Rodar rodou, mais vamos alterar a cor desse botão agora.
 
 1 - Adicione mais dois atributos na interface para que possamos definir as cores dos botões:
 
@@ -1693,7 +1693,7 @@ possuirBtnFechar?: boolean;
 
 ~~~
 
-2 - Sette as cores no componente:
+2 - Atribua as cores no componente:
 
 ~~~typescript
 ...
@@ -1779,7 +1779,7 @@ Em **cadastro-filmes.component**, no método `salvar()`, nós temos um dialog qu
 const dialogRef = this.dialog.open(AlertaComponent, config);
 ~~~
 
-Ao verificar o exemplo no site, podemos ver que eles utilizam também, um `afterClosed().subscribe()`, Ele foi "subscribido()" para que possamos obter o resultado depois que o dialog for fechado.
+Ao verificar o exemplo no site, podemos ver que eles utilizam também, um `afterClosed().subscribe()`, Ele é `subscribe()` para que possamos obter o resultado depois que o dialog for fechado.
 
 ![img/138.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/138.png)
 
@@ -1903,6 +1903,7 @@ O resultado deve ser o seguinte:
 
 ___
 
+
 ### Listagem de resultados e melhoria de performance
 
 ##### Buscando e listando os filmes
@@ -1916,23 +1917,23 @@ Vamos tratar da listagem de filmes do nosso projeto.
 <mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
 <div class="home-content">
 
-  <mat-card class="home-card">
-    <mat-card-header>
-      <div mat-card-avatar ></div>
-      <mat-card-title>Angular Material @ngrx</mat-card-title>
-      <mat-card-subtitle>Check this Home</mat-card-subtitle>
-    </mat-card-header>
-    <img mat-card-image src="../assets/images/angular-material-post.png" alt="Angular Material 7">
-    <mat-card-content>
-      <p>
-        Angular Material with @ngrx and lazy loading, click OPEN button then
-        you can see sidenav content (with the current store value)
-      </p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button color="accent"  mat-raised-button>OPEN</button>
-    </mat-card-actions>
-  </mat-card>
+<mat-card class="home-card">
+<mat-card-header>
+<div mat-card-avatar ></div>
+<mat-card-title>Angular Material @ngrx</mat-card-title>
+<mat-card-subtitle>Check this Home</mat-card-subtitle>
+</mat-card-header>
+<img mat-card-image src="../assets/images/angular-material-post.png" alt="Angular Material 7">
+<mat-card-content>
+<p>
+Angular Material with @ngrx and lazy loading, click OPEN button then
+you can see sidenav content (with the current store value)
+</p>
+</mat-card-content>
+<mat-card-actions>
+<button color="accent" mat-raised-button>OPEN</button>
+</mat-card-actions>
+</mat-card>
 </div>
 
 ~~~
@@ -1949,24 +1950,23 @@ import { Filme } from '../shared/models/filme';
 const url = 'http://localhost:3000/filmes/';
 
 @Injectable({
-  providedIn: 'root'
+providedIn: 'root'
 })
 export class FilmesService {
 
-  constructor(private http: HttpClient) { }
-  
-  salvar(filme: Filme): Observable<Filme> {
-    return this.http.post<any>(url, filme);
-  }
+constructor(private http: HttpClient) { }
+salvar(filme: Filme): Observable<Filme> {
+return this.http.post<any>(url, filme);
+}
 
-  listar(): Observable<Filme[]>{
-    return this.http.get<Filme[]>(url);
-  }
+listar(): Observable<Filme[]>{
+return this.http.get<Filme[]>(url);
+}
 }
 
 ~~~
 
-3 - Em **listagem-filmes.component.ts**, vamos declarar no construtor o FilmesService
+3 - Em **listagem-filmes.component.ts**, vamos declarar no construtor o FilmesService:
 
 `constructor(private filmesService: FilmesService){ }`
 
@@ -1979,38 +1979,246 @@ export class FilmesService {
 ~~~typescript
 ...
 ngOnInit() {
-    this.filmesService.listar().subscribe((filmes: Filme[]) => this.filmes = filmes)
-  }
+this.filmesService.listar().subscribe((filmes: Filme[]) => this.filmes = filmes)
+}
 ...
 ~~~
 
-Ao carregar o nosso componente de listagem, O construtor vai buscar o nosso filmesService e após a nossa tela ter sido inicializada o `this.filmes`Service.listar()` vai realizar a nossa consulta pedindo para retornar a nossa lista. O subscribe()` está ali para ser informado quando esse array de filmes for retornado. Por fim, quando este array de filmes for retornado, vamos atribuir ele ao nosso array de filmes, e isso vai atualiza-lo. Sem o subscribe, esta linha de código nunca seria executada.
+Ao carregar o nosso componente de listagem, O construtor vai buscar o nosso `filmesService` e após a nossa tela ter sido inicializada o `this.filmes`Service.listar()` vai realizar a nossa consulta pedindo para retornar a nossa lista. O `subscribe()` está ali para ser informado quando esse array de filmes for retornado. Por fim, quando este array de filmes for retornado, vamos atribuir ele ao nosso array de filmes, e isso vai atualizá-lo. Sem o `subscribe()`, esta linha de código nunca seria executada.
+
+6 - Vamos atualizar o nosso **listagem-filmes.component**.
+
+~~~typescript
+<mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
+<div class="home-content">
+
+<mat-card class="home-card" *ngFor="let filme of filmes">
+<mat-card-header>
+<div mat-card-avatar ></div>
+<mat-card-title>{{filme.titulo}}</mat-card-title>
+<mat-card-subtitle>{{filme.genero}}</mat-card-subtitle>
+</mat-card-header>
+<img mat-card-image [src]="filme.urlFoto">
+<mat-card-content>
+<p>
+{{filme.descricao}}
+</p>
+</mat-card-content>
+<mat-card-actions>
+<button color="accent" mat-raised-button>ABRIR</button>
+</mat-card-actions>
+</mat-card>
+</div>
+
+~~~
+
+O `*ngFor="let filme of filmes"` vai iterar sobre nosso array de filmes e atribuir cada iteração ao alias filme e isso vai permitir o acesso aos atributos do filme via: **{{filme.nome-do-atributo}}**
 
 
+Teste a aplicação
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+___
 
 ##### Scroll infinito
+
+O próprio Angular tem um scroll infinito, mas é meio complicado de se usar e costuma dar problemas quando usado em produção no Angular 8. Por isso, vamos utilizar aqui o scroll do **ngx**.
+
+
+Acesse o site do [ngx infinite scroll](https://www.npmjs.com/package/ngx-infinite-scroll)
+
+
+Vamos colocar ele em nosso projeto:
+
+1 - Execute `npm install ngx-infinite-scroll --save`.
+
+
+2 - Adicione o scroll no módulo de filmes. Não vamos adicioná-lo ao módulo raiz porque não há necessidade da nossa aplicação inteira ter acesso ao scroll:
+
+~~~typescript
+@NgModule({
+imports: [
+CommonModule,
+MaterialModule,
+ReactiveFormsModule,
+FormsModule,
+CamposModule,
+InfiniteScrollModule // <--
+],
+declarations: [CadastroFilmesComponent, ListagemFilmesComponent]
+})
+~~~
+
+3 - Adicione o método `onScroll()` e a diretiva `infiniteScroll` em nossa `div class="home-content"` do .html:
+
+~~~html
+<mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
+<div class="home-content" infiniteScroll (scrolled)="onScroll()">
+<mat-card class="home-card" *ngFor="let filme of filmes">
+...
+~~~
+
+Quando a página for exibida, creio que uns 80% do seu conteúdo, este método é disparado e passa a buscar por mais registros.
+
+Vamos criar o `onScroll()` no .ts. Primeiro precisamos particionar a nossa consulta que já existe. pois ela já está retornando todos os registros, mas agora queremos que ela nos retorne somente parte dos nossos registros.
+
+Em nosso caso, como estamos usando o `json-server`, ele já possui este tipo de consulta. Acesse: [json server paginate](https://github.com/typicode/json-server#paginate)
+
+![img/142.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/142.png)
+
+Aqui podemos ver que para paginar, basta definir no `GET`, o numero de páginas e a quantidade de registros por página que queremos.
+O que acontece é que o cabeçalho da requisição será alterado e os parâmetros `page` e `limit` serão passados no url.
+Vamos alterar a nossa listagem:
+
+
+4 - Em **filmes-service.ts**, passe a página e quantidade de registro por pagina para o método `listar()`:
+
+~~~typescript
+...
+
+listar(pagina: number, qtdPagina: number): Observable<Filme[]>{
+return this.http.get<Filme[]>(url);
+}
+...
+~~~
+
+5 - O `HttpParams` do `HttpClient` faz a tratativa de passagem de parâmetros.
+
+Ele só recebe um nome de parâmetro e valor de parâmetro por vez e como as urls só trabalham com Strings, devemos converter o number para String.
+Para fazer com que ele receba os dois parâmetros, vamos concatenar o `HttpParams` com o primeiro parâmetro e em seguida com o segundo parâmetro:
+
+~~~typescript
+...
+listar(pagina: number, qtdPagina: number): Observable<Filme[]>{
+let httpParams = new HttpParams();
+httpParams = httpParams.set('_page', pagina.toString())
+httpParams = httpParams.set('_limit', qtdPagina.toString())
+return this.http.get<Filme[]>(url, {params: httpParams});
+}
+}
+
+~~~
+
+6 - Em nosso **listagem-filmes.component.ts** vamos criar as variáveis de paginação e o nosso método de `listarFilmes()`
+A página vai ser inicializada com zero, pois todas as vezes que entrar no método de listagem, nós vamos incrementar mais uma página.
+Assim que o componente for carregado, ele vai entrar no método de listagem.
+Sempre que o scroll for acionado, ele também vai entrar no método de listagem: 
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-listagem-filmes',
+templateUrl: './listagem-filmes.component.html',
+styleUrls: ['./listagem-filmes.component.scss']
+})
+export class ListagemFilmesComponent implements OnInit {
+
+readonly qtdPagina = 4;
+pagina = 0;
+filmes: Filme[];
+constructor(private filmesService: FilmesService){ }
+
+ngOnInit(): void {
+this.listarFilmes();
+}
+
+onScroll(): void {
+this.listarFilmes();
+}
+
+listarFilmes(): void {
+this.pagina++;
+this.filmesService.listar(this.pagina, this.qtdPagina)
+.subscribe((filmes: Filme[]) => this.filmes = filmes)
+}
+}
+
+~~~
+
+
+7 - Ao invés de substituir o antigo array de filmes, vamos concatenar os dois com o uso de spread operator:
+atribua [] na declaração do array de filmes
+
+~~~typescript
+...
+filmes: Filme[] = [];
+
+...
+
+listarFilmes(): void {
+this.pagina++;
+this.filmesService.listar(this.pagina, this.qtdPagina)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes))
+}
+...
+~~~
+
+
+
+Teste a aplicação
+
+![img/143.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/143.png)
+
+Vamos reduzir estas fotos no .css?
+
+1 - Em **listagem-filmes.component.scss** adicione a seguinte definição de classe:
+
+~~~css
+.mat-card-image {
+width: auto;
+margin: auto;
+display: block; 
+}
+~~~
+
+2 - Altere a media para:
+
+~~~css
+@media screen and (min-width: 525px) {
+.home-content {
+.home-card {
+width: calc(50% - 52px);
+}
+}
+}
+~~~
+
+3 - Adicione outra media:
+
+~~~css
+@media screen and (min-width: 525px) {
+.home-content {
+.home-card {
+width: calc(50% - 52px);
+}
+}
+}
+~~~
+
+4 - Altere a media de 1440 para:
+
+~~~css
+@media screen and (min-width: 1200px) {
+.home-content {
+.home-card {
+width: calc(25% - 52px);
+}
+}
+}
+~~~
+
+Ficamos com 4 filmes por linha na tela:
+
+![img/144.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/144.png)
+
+
+
+
+
+
+
 ##### Criando nosso formulário de filtro
 ##### Fazendo a ordenação e filtragem
 ##### Utilizando HttpParams
