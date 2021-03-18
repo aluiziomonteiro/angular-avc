@@ -2212,14 +2212,166 @@ width: calc(25% - 52px);
 Ficamos com 4 filmes por linha na tela:
 
 ![img/144.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/144.png)
-
-
-
-
-
-
+___
 
 ##### Criando nosso formulário de filtro
+
+Vamos criar um formulário de filtro em nossa listagem.
+
+1 - Vamos adicionar duas classes em nosso estilo **style.scss** para que toda nossa aplicação possa acessá-la:
+
+~~~css
+.float-left {
+float: left;
+}
+
+.margin10 {
+margin: 10px;
+}
+~~~
+
+2 - Crie uma classe exclusiva no .css do componente de listagem:
+
+.filtro-listagem {
+width: calc(100% - 50px);
+}
+
+3 - Crie um formulário em nossa página de listagem:
+
+~~~typescript
+<mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
+
+<mat-card class="float-left margin10 filtro-listagem" >
+<form autocomplete="off" novalidate [formGroup]="filtrosListagem">
+<div class="float-left width50">
+primeiro input
+</div>
+<div class="float-left width50">
+segundo input
+</div>
+</form>
+</mat-card>
+<div class="home-content" infiniteScroll (scrolled)="onScroll()">
+...
+~~~
+
+4 - Nossos inputs serão reaproveitados mas antes de adicioná-los aqui, vamos para o component definir o nosso FormGroup como já fizemos no form de cadastro:
+
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-listagem-filmes',
+templateUrl: './listagem-filmes.component.html',
+styleUrls: ['./listagem-filmes.component.scss']
+})
+export class ListagemFilmesComponent implements OnInit {
+
+readonly qtdPagina = 4;
+pagina: number = 0;
+filmes: Filme[] = [];
+filtrosListagem: FormGroup;
+generos: Array<string>; // <--
+
+constructor(private filmesService: FilmesService,
+private fb: FormBuilder){ } // <--
+
+ngOnInit(): void {
+this.filtrosListagem = this.fb.group({ // <--
+texto: [''],
+generos:['']}
+);
+
+this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ]; //<--
+
+this.listarFilmes();
+}
+
+onScroll(): void {
+this.listarFilmes();
+}
+
+listarFilmes(): void {
+this.pagina++;
+this.filmesService.listar(this.pagina, this.qtdPagina)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes))
+}
+}
+
+~~~
+
+
+5 - Adicione os campos ao .html:
+
+
+~~~typescript
+<mat-toolbar class="app-title">Filmes Cadastrados</mat-toolbar>
+
+<mat-card class="float-left margin10 filtro-listagem" >
+<form autocomplete="off" novalidate [formGroup]="filtrosListagem">
+<div class="float-left width50">
+<div class="padding10">
+<dio-input-text titulo="Pesquise aqui" 
+controlName="texto" 
+[formGroup]="filtrosListagem">
+</dio-input-text>
+</div>
+</div>
+<div class="float-left width50">
+<div class="padding10">
+<dio-input-select titulo="Gênero" 
+[opcoes]="generos" 
+controlName="generos" 
+[formGroup]="filtrosListagem">
+</dio-input-select>
+</div>
+</div>
+</form>
+</mat-card>
+<div class="home-content" infiniteScroll (scrolled)="onScroll()">
+
+<mat-card class="home-card" *ngFor="let filme of filmes">
+<mat-card-header>
+<div mat-card-avatar ></div>
+<mat-card-title>{{filme.titulo}}</mat-card-title>
+<mat-card-subtitle>{{filme.genero}}</mat-card-subtitle>
+</mat-card-header>
+<img mat-card-image [src]="filme.urlFoto">
+<mat-card-content>
+<p>
+{{filme.descricao}}
+</p>
+</mat-card-content>
+<mat-card-actions>
+<button color="accent" mat-raised-button>ABRIR</button>
+</mat-card-actions>
+</mat-card>
+</div>
+
+~~~
+
+6 - Criamos uma classe no .css para dar mais um espaçamento aos nossos campos:
+
+~~~css
+.padding10 {
+padding: 10px;
+}
+~~~
+
+Teste o formulário:
+
+![img/145.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/145.png)
+
+
+
+
+
+
+
 ##### Fazendo a ordenação e filtragem
 ##### Utilizando HttpParams
 ##### NG - template e melhoria de performance
@@ -2260,3 +2412,4 @@ Ficamos com 4 filmes por linha na tela:
 
 
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+

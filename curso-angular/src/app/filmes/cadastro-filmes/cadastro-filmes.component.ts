@@ -53,8 +53,6 @@ export class CadastroFilmesComponent implements OnInit {
 
     const filme = this.cadastro.getRawValue() as Filme;
     this.salvar(filme);
-
-    //alert('Sucesso!\n\n'+ JSON.stringify(this.cadastro.value, null, 4));
   }
 
   reiniciarForm(): void{ 
@@ -63,7 +61,6 @@ export class CadastroFilmesComponent implements OnInit {
 
   private salvar(filme: Filme): void {
     this.filmesService.salvar(filme).subscribe(() => { 
-      // Configuração do alerta
       const config = {
         data: {
           btnSucesso:  'ir para a listagem',
@@ -72,10 +69,9 @@ export class CadastroFilmesComponent implements OnInit {
           possuirBtnFechar: true
         } as Alerta
       };
-      // Ao abrir, use O AlertaComponent com as configurações definidas acima.
+      
       const dialogRef = this.dialog.open(AlertaComponent, config);
 
-      // Após fechar, pegue o valor da opcao e tome uma rota com base nesse valor.
       dialogRef.afterClosed().subscribe((opcao: boolean) => {
         if (opcao ){
           this.router.navigateByUrl('filmes');
@@ -93,7 +89,7 @@ export class CadastroFilmesComponent implements OnInit {
           btnSucesso:  'Fechar'
         } as Alerta
       };
-      // Abra o dialog usando o nosso componente de alerta e com as configurações que definimos
+  
       this.dialog.open(AlertaComponent, config);
     });
   }

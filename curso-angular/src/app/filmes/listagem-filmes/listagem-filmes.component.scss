@@ -16,6 +16,10 @@
   display: block; 
 }
 
+.filtro-listagem {
+  width: calc(100% - 50px);
+}
+
 @media screen and (min-width: 525px) {
   .home-content {
     .home-card {
