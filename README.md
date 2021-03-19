@@ -2214,6 +2214,7 @@ Ficamos com 4 filmes por linha na tela:
 ![img/144.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/144.png)
 ___
 
+
 ##### Criando nosso formulário de filtro
 
 Vamos criar um formulário de filtro em nossa listagem.
@@ -2365,14 +2366,205 @@ padding: 10px;
 Teste o formulário:
 
 ![img/145.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/145.png)
-
-
-
-
-
-
+___
 
 ##### Fazendo a ordenação e filtragem
+
+Vamos fazer nosso formulário de filtragem funcionar.
+Para saber quando alguma informação foi inserida em um campo, podemos utilizar o `valueChanges`. Ele é um observable que vai ficar monitorando nosso campo, portanto, precisamos nos subscrever para acompanhar:
+
+1 - Vamos monitorar as alterações em nossos inputs:
+
+~~~typescript
+...
+ngOnInit(): void {
+this.filtrosListagem = this.fb.group({ 
+texto: [''],
+generos:['']}
+);
+
+this.filtrosListagem.get('texto').valueChanges
+.subscribe((val: string) => {
+console.log('alteração valor texto', val);
+});
+
+this.filtrosListagem.get('generos').valueChanges
+.subscribe((val: string) => {
+console.log('alteração valor generos', val);
+});
+this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ]; 
+
+this.listarFilmes();
+}
+...
+~~~
+
+![img/146.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/146.png)
+
+
+Agora precisamos avisar para a nossa listagem que essas alterações estão acontecendo. Vamos também cuidar de ordenar os filmes listados. Do mais recente ao mai antigo.
+1 - Crie as variáveis texto e gênero:
+
+~~~typescript
+...
+export class ListagemFilmesComponent implements OnInit {
+
+readonly qtdPagina = 4;
+pagina: number = 0;
+texto: string;
+genero: string;
+...
+~~~
+
+2 - Atribua os valores do `val` para as variáveis criadas:
+
+~~~typescript
+...
+
+this.filtrosListagem.get('texto').valueChanges
+.subscribe((val: string) => {
+this.texto = val;
+this.listarFilmes();
+});
+
+this.filtrosListagem.get('generos').valueChanges
+.subscribe((val: string) => {
+this.genero = val;
+this.listarFilmes();
+});
+...
+~~~
+
+3 - Vamos receber estes valores em nosso `listarFilmes`:
+
+~~~typescript
+...
+listarFilmes(): void {
+this.pagina++;
+this.filmesService.listar(this.pagina, this.qtdPagina, this.texto, this.genero)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes))
+});
+...
+~~~
+
+
+4 - Adicione os parâmetros também em `listar()`:
+
+~~~typescript
+...
+
+listar(pagina: number, qtdPagina: number, texto: string, genero: string): Observable<Filme[]>{
+let httpParams = new HttpParams();
+httpParams = httpParams.set('_page', pagina.toString())
+httpParams = httpParams.set('_limit', qtdPagina.toString())
+httpParams = httpParams.set('q', texto)
+httpParams = httpParams.set('genero', genero)
+return this.http.get<Filme[]>(url, {params: httpParams});
+}
+}
+...
+~~~
+
+5 - Não é sempre que estes campos serão preenchidos, portanto, devemos verificar isso:
+
+~~~typescript
+...
+listar(pagina: number, qtdPagina: number, texto: string, genero: string): Observable<Filme[]>{
+let httpParams = new HttpParams();
+httpParams = httpParams.set('_page', pagina.toString());
+httpParams = httpParams.set('_limit', qtdPagina.toString());
+if (texto) {
+httpParams = httpParams.set('q', texto);
+}
+if (genero) {
+httpParams = httpParams.set('genero', genero);
+}
+return this.http.get<Filme[]>(url, {params: httpParams});
+}
+...
+~~~
+
+Podemos ver que a filtragem está adicionando páginas que não existem:
+
+![img/147.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/147.png)
+
+Acontece que quando digitamos no input, a busca está sendo realizada, a página está sendo incrementada e o array está recebendo um `push()` de um novo array e o exibe. 
+Para resolver isso vai ser preciso limpar o array e a pesquisa para fazer com que somente seja retornado aquilo que foi pesquisado.
+
+6 - Crie um método para resetar a página, esvaziar o array e chamar a listagem de filmes em **listagem-filmes.component.ts**:
+
+~~~typescript
+...
+listarFilmes(): void {
+this.pagina++;
+this.filmesService.listar(this.pagina, this.qtdPagina, this.texto, this.genero)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes))
+}
+
+private resetarConsulta(): void {
+this.pagina = 0;
+this.filmes = [];
+this.listarFilmes();
+}
+}
+~~~
+
+7 - Troque os métodos:
+
+~~~typescript
+
+...
+this.filtrosListagem.get('texto').valueChanges
+.subscribe((val: string) => {
+this.texto = val;
+this.resetarConsulta(); // <--
+});
+
+this.filtrosListagem.get('generos').valueChanges
+.subscribe((val: string) => {
+this.genero = val;
+this.resetarConsulta(); // <--
+});
+...
+~~~
+
+Agora sim:
+
+![img/148.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/148.png)
+
+
+Para ordenar os nossos registros, do maior para o menor, devemos passar mais dois parâmetros em nosso método `listar()` em **filmes.service.ts**.
+O primeiro parâmetro vai conter o campo a ser ordenado e o segundo parâmetro vai conter o tipo de ordenação:
+
+~~~typescript
+
+...
+listar(pagina: number, qtdPagina: number, texto: string, genero: string): Observable<Filme[]>{
+let httpParams = new HttpParams();
+httpParams = httpParams.set('_page', pagina.toString());
+httpParams = httpParams.set('_limit', qtdPagina.toString());
+
+httpParams = httpParams.set('_sort', 'id');
+httpParams = httpParams.set('_order', 'desc');
+
+if (texto) {
+httpParams = httpParams.set('q', texto);
+}
+
+if (genero) {
+httpParams = httpParams.set('genero', genero);
+}
+return this.http.get<Filme[]>(url, {params: httpParams});
+}
+
+}
+~~~
+
+Já está ordenando, mas na próxima aula vamos melhorar este método de consulta.
+___
+
+
+
 ##### Utilizando HttpParams
 ##### NG - template e melhoria de performance
 
@@ -2388,28 +2580,6 @@ Teste o formulário:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
 
