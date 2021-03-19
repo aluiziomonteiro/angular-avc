@@ -2566,6 +2566,199 @@ ___
 
 
 ##### Utilizando HttpParams
+
+
+Aqui nós estamos passando muitos parâmetros:		
+
+~~~typescript
+...
+export class ListagemFilmesComponent implements OnInit {
+
+readonly qtdPagina = 4;
+pagina: number = 0;
+texto: string;
+genero: string;
+filmes: Filme[] = [];
+filtrosListagem: FormGroup;
+generos: Array<string>; 
+...
+~~~
+
+
+1 - Vamos criar uma interface dentro de **shared/models** para reduzir isso:
+
+`ng g i shared/models/configParams`
+
+~~~typescript
+import { CampoGenerico } from "./campo-generico";
+
+export interface ConfigParams {
+pagina?: number;
+limite?: number;
+pesquisa?: string;
+campo?: CampoGenerico;
+}
+~~~
+
+2 - Nosso atributo `campo` não vai ser um valor primitivo. Vamos criar uma outra interface para ela e informar lá dentro que `campo` terá dois valores:
+
+`ng g i shared/models/campoGenerico`
+
+~~~typescript
+export interface CampoGenerico {
+tipo: string;
+valor: any;
+}
+~~~
+
+3 - A **listagem-filmes.component.ts** fica assim:
+
+
+
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { ConfigParams } from 'src/app/shared/models/config-params';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-listagem-filmes',
+templateUrl: './listagem-filmes.component.html',
+styleUrls: ['./listagem-filmes.component.scss']
+})
+export class ListagemFilmesComponent implements OnInit {
+
+config: ConfigParams = {
+pagina: 0,
+limite: 4
+}
+
+filmes: Filme[] = [];
+filtrosListagem: FormGroup;
+generos: Array<string>; 
+
+constructor(private filmesService: FilmesService,
+private fb: FormBuilder){ }
+
+ngOnInit(): void {
+this.filtrosListagem = this.fb.group({ 
+texto: [''],
+generos:['']}
+);
+
+this.filtrosListagem.get('texto').valueChanges
+.subscribe((val: string) => {
+this.config.pesquisa = val;
+this.resetarConsulta();
+});
+
+this.filtrosListagem.get('generos').valueChanges
+.subscribe((val: string) => {
+this.config.campo = {tipo: 'genero', valor: val};
+this.resetarConsulta();
+});
+this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ]; 
+
+this.listarFilmes();
+}
+
+onScroll(): void {
+this.listarFilmes();
+}
+
+private listarFilmes(): void {
+this.config.pagina++;
+this.filmesService.listar(this.config)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes))
+}
+
+private resetarConsulta(): void {
+this.config.pagina = 0;
+this.filmes = [];
+this.listarFilmes();
+}
+}
+
+~~~
+
+
+4 - O `listar()` **filme.service.ts** ficou da seguinte maneira:
+
+~~~typescript
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ConfigParams } from '../shared/models/config-params';
+import { Filme } from '../shared/models/filme';
+import { ConfigParamsService } from './config-params.service';
+
+const url = 'http://localhost:3000/filmes/';
+
+@Injectable({
+providedIn: 'root'
+})
+export class FilmesService {
+
+constructor(private http: HttpClient,
+private configService: ConfigParamsService) { }
+salvar(filme: Filme): Observable<Filme> {
+return this.http.post<any>(url, filme);
+}
+
+listar(config: ConfigParams): Observable<Filme[]>{
+const configParams = this.configService.configuraParametros(config);
+return this.http.get<Filme[]>(url, {params: configParams});
+}
+}
+
+
+~~~
+
+
+5 - Em nosso método de listar, vamos precisar criar um novo serviço.
+
+
+~~~typescript
+import { HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ConfigParams } from '../shared/models/config-params';
+
+@Injectable({
+providedIn: 'root'
+})
+export class ConfigParamsService {
+
+constructor() { }
+configuraParametros(config: ConfigParams): HttpParams{
+let httpParams = new HttpParams();
+
+if (config.pagina) {
+httpParams = httpParams.set('_page', config.pagina.toString());
+}
+if (config.limite) {
+httpParams = httpParams.set('_limit', config.limite.toString());
+}
+
+if (config.pesquisa) {
+httpParams = httpParams.set('q', config.pesquisa);
+}
+
+if (config.campo) {
+httpParams = httpParams.set(config.campo.tipo, config.campo.valor.toString());
+}
+httpParams = httpParams.set('_sort', 'id');
+httpParams = httpParams.set('_order', 'desc');
+return httpParams;
+}
+}
+
+~~~
+
+Teste a aplicação
+
+
 ##### NG - template e melhoria de performance
 
 
