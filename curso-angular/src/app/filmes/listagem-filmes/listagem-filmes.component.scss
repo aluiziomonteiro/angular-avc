@@ -3,17 +3,22 @@
   flex-wrap: wrap;
   width: calc(100% - 20px);
   justify-content: space-between;
-   padding: 10px;
-  .home-card {
-    margin-bottom: 10px;
+  padding: 10px;
+}
 
-  }
+.home-card {
+  margin-bottom: 10px;
 }
 
 .mat-card-image {
-  width: auto;
+  width: 182px;
+  height: 268px;
   margin: auto;
   display: block; 
+}
+
+.quebrar-linha {
+  white-space: pre-line;
 }
 
 .filtro-listagem {

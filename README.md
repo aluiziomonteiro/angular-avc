@@ -2761,8 +2761,210 @@ Teste a aplicação
 
 ##### NG - template e melhoria de performance
 
+No cadastro de filmes, o campo imagem não é obrigatório. Isso quer dizer que quando o usuário cadastrar um filme sem colocar a imagem, nada vai aparecer. Vamos fazer com que apareça uma imagem padrão para sinalizar que não há imagem.
+
+1 - Em **listagem-filmes.component.html** adicione a seguinte linha:
+
+~~~html
+´<img mat-card-image [src]="filme.urlFoto || semFoto">´
+~~~
+
+2 - Crie a variável ´semFoto´ no **listagem-filmes.component.html**:
+
+~~~typescript
+readonly semFoto = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEemlgFtRl2mVB_7J_ypS-JHchAMWKXNkANw&usqp=CAU';
+~~~
+
+3 - ajuste o css do componente para que as imagens ficam em um tamanho padrão:
+
+~~~css
+...
+.mat-card-image {
+width: 182px;
+height: 268px;
+margin: auto;
+display: block; 
+}
+...
+~~~
+
+No campo de Descrição do filme, faremos da seguinte maneira:
+
+1 - Crie a classe quebrar-linha:
+
+~~~html
+...
+<p class="quebrar-linha">
+{{filme.descricao || 'nenhuma descrição informada'}}
+</p>
+...
+~~~
+
+2 - Defina o css como: 
+
+~~~css
+...
+.quebrar-linha {
+white-space: pre-line;
+}
+...
+~~~
+
+Vamos colocar uma mensagem para indicar que não existe filmes caso nenhum filme tenha sido cadastrado ou caso a busca não retorne nenhum registro:
+
+1 - Em **listagem-filmes.component.html**, crie um template u use o ngIf para acioná-lo caso não exista filmes:
+
+
+
+
+~~~html
+...
+</mat-card>
+</div>
+
+<ng-template #semFilme>
+<h1 class="main-div full-width">Nenhum registro encontrado</h1>
+</ng-template>
+~~~
+
+e
+
+~~~html
+...
+</mat-card>
+<div class="home-content" infiniteScroll (scrolled)="onScroll()" *ngIf="filmes.length; else semFilme">
+...
+~~~
+
+O resultado é:
+
+![img/149.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/149.png)
+
+
+Uma coisa ruim que está acontecendo é que o Angular está fazendo uma requisição para cada letra que é digitada no input de pesquisa. Para consertar isso, vamos usar o debounce Time:
+
+A classe **listagem-filmes.component.ts** fica assim:
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators'
+import { FilmesService } from 'src/app/core/filmes.service';
+import { ConfigParams } from 'src/app/shared/models/config-params';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-listagem-filmes',
+templateUrl: './listagem-filmes.component.html',
+styleUrls: ['./listagem-filmes.component.scss']
+})
+export class ListagemFilmesComponent implements OnInit {
+
+readonly semFoto = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEemlgFtRl2mVB_7J_ypS-JHchAMWKXNkANw&usqp=CAU';
+
+config: ConfigParams = {
+pagina: 0,
+limite: 4
+}
+
+filmes: Filme[] = [];
+filtrosListagem: FormGroup;
+generos: Array<string>; 
+
+constructor(private filmesService: FilmesService,
+private fb: FormBuilder){ }
+
+ngOnInit(): void {
+this.filtrosListagem = this.fb.group({ 
+texto: [''],
+generos:['']}
+);
+
+this.filtrosListagem.get('texto').valueChanges
+.subscribe((val: string) => {
+this.config.pesquisa = val;
+this.resetarConsulta();
+});
+
+this.filtrosListagem.get('generos').valueChanges
+.pipe(debounceTime(400))
+.subscribe((val: string) => {
+this.config.campo = {tipo: 'genero', valor: val};
+this.resetarConsulta();
+});
+this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ]; //<--
+
+this.listarFilmes();
+}
+
+onScroll(): void {
+this.listarFilmes();
+}
+
+private listarFilmes(): void {
+this.config.pagina++;
+this.filmesService.listar(this.config)
+.subscribe((filmes: Filme[]) => this.filmes.push(...filmes));
+}
+
+private resetarConsulta(): void {
+this.config.pagina = 0;
+this.filmes = [];
+this.listarFilmes();
+}
+}
+~~~
+
+Após esta alteração, as consultas serão realizadas com um intervalo de 400 ms após a digitação do último carácter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Finalizando o projeto prático
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
