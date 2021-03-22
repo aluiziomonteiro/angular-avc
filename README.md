@@ -2917,23 +2917,163 @@ this.listarFilmes();
 
 Após esta alteração, as consultas serão realizadas com um intervalo de 400 ms após a digitação do último carácter.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+___
 
 ### Finalizando o projeto prático
 
+##### Criando componente para visualizar os filmes
+
+Vamos criar um componente para visualizar filmes:
+
+1 - `ng g c filmes/visualizarFilmes --spec=false`
+
+2 - Altere o seletor:
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+selector: 'dio-visualizar-filme',
+...
+~~~
+
+3 - No template de listagem de filmes, vamos adicionar o método no botão para abrir filmes:
+
+~~~html
+...
+mat-card-actions>
+<button color="accent" mat-raised-button (click)="abrir(filme.id)">ABRIR</button>
+</mat-card-actions>
+...
+~~~
+
+4 - Crie uma nova rota children para o `id`
+
+~~~typescript
+...
+children: [
+{
+// Digitou: localhost:4200/filmes - Vai cair no componente que lista os filmes
+path: '',
+component: ListagemFilmesComponent
+},
+// Dois pontos informa para o angula que o id é um parâmetro
+{
+path: ':id',
+component: VisualizarFilmesComponent
+},
+...
+~~~
+
+5 - Importe a `Router` no construtor do componente de listagem de filmes, e crie o método abrir:
+
+~~~typescript
+...
+constructor(private filmesService: FilmesService,
+private fb: FormBuilder,
+private router: Router){ }
+...
+
+...
+abrir(id: number): void {
+this.router.navigateByUrl('/filmes/'+ id);
+}
+~~~
+
+6 - Com isso, o botão de Abrir já está funcionando, mas precisamos obter o id do filme clicado para que assim seja possível carregar as informações respectivas ao filme em questão.
+Isso será feito no .ts do componente de visualização de filme, utilizando a instrução `activatedRoute.snapshot.params['id'];`:
+
+~~~typescript
+...
+constructor(private activatedRoute: ActivatedRoute) { }
+
+ngOnInit() {
+this.activatedRoute.snapshot.params['id'];
+}
+...
+~~~
+
+7 - Vamos criar outro método para visualizar dentro de **filmes.service.ts**:
+
+~~~typescript
+...
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-visualizar-filmes',
+templateUrl: './visualizar-filmes.component.html',
+styleUrls: ['./visualizar-filmes.component.scss']
+})
+export class VisualizarFilmesComponent implements OnInit {
+
+filme: Filme;
+constructor(private activatedRoute: ActivatedRoute,
+private filmesService: FilmesService) { }
+
+ngOnInit() {
+this.visualizar(this.activatedRoute.snapshot.params['id']);
+}
+
+private visualizar(id: number): void {
+this.filmesService.visualizar(id).subscribe((filme:Filme) => this.filme = filme);
+}
+
+}
+
+...
+~~~
+
+
+8 - Precisamos criar uma lista para exibir as informações do 
+filme. Para nos auxiliar, vamos utilizar o `mat-list`. 
+
+
+
+~~~typescript
+
+<mat-list>
+<mat-list-item>Título: {{filme.titulo}}</mat-list-item>
+<mat-list-item>Data de Lançamento: {{filme.dtLancamento}}</mat-list-item>
+<mat-list-item>Gênero: {{filme.genero}}</mat-list-item>
+<mat-list-item>Descrição: {{filme.descricao}}</mat-list-item>
+<mat-list-item>Nota: <a [href]="filme.urlIMDb" target="_blank">{{filme.nota}}</a> </mat-list-item>
+<img mat-card-image [src]="filme.urlFoto || semFoto">
+</mat-list>>
+
+
+~~~
+
+
+![img/150.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/150.png)
+
+
+
+
+9 - Ajuste o formato da data utilizando um pipe e coloque um template para tratar erros de página não encontradas:
+
+~~~typescript
+<mat-list *ngIf="filme">
+<mat-list-item>Título: {{filme.titulo}}</mat-list-item>
+<mat-list-item>Data de Lançamento: {{filme.dtLancamento | date: 'dd/MM/yyyy'}}</mat-list-item>
+<mat-list-item>Gênero: {{filme.genero}}</mat-list-item>
+<mat-list-item>Descrição: {{filme.descricao}}</mat-list-item>
+<mat-list-item>Nota: <a [href]="filme.urlIMDb" target="_blank">{{filme.nota}}</a> </mat-list-item>
+<img mat-card-image [src]="filme.urlFoto || semFoto">
+</mat-list>>
+
+<ng-template #semFilme>
+<h1 class="main-div full-width" >Nenhum registro encontrado</h1>
+</ng-template>
+
+~~~
+
+Teste a página.
+___
+
+##### Excluindo os filmes
 
 
 
@@ -2943,6 +3083,17 @@ Após esta alteração, as consultas serão realizadas com um intervalo de 400 m
 
 
 
+
+
+
+
+
+
+
+
+##### Enviando um filme para a pagina de edição
+
+##### Editando os filmes
 
 
 
@@ -2976,5 +3127,6 @@ Após esta alteração, as consultas serão realizadas com um intervalo de 400 m
 
 
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+
 
 

@@ -42,11 +42,11 @@
       </p>
     </mat-card-content>
     <mat-card-actions>
-      <button color="accent" mat-raised-button>ABRIR</button>
+      <button color="accent" mat-raised-button (click)="abrir(filme.id)">ABRIR</button>
     </mat-card-actions>
   </mat-card>
 </div>
 
 <ng-template #semFilme>
-  <h1 class="main-div full-width">Nenhum registro encontrado</h1>
+  <h1 class="main-div full-width" >Nenhum registro encontrado</h1>
 </ng-template>

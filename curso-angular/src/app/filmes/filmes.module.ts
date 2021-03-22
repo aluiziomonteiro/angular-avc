@@ -8,6 +8,7 @@ import { MaterialModule } from '../shared/material/material.module';
 import { CadastroFilmesComponent } from './cadastro-filmes/cadastro-filmes.component';
 import { ListagemFilmesComponent } from './listagem-filmes/listagem-filmes.component';
 import { CamposModule } from '../shared/components/campos/campos.module';
+import { VisualizarFilmesComponent } from './visualizar-filmes/visualizar-filmes.component';
 
 
 @NgModule({
@@ -17,8 +18,8 @@ import { CamposModule } from '../shared/components/campos/campos.module';
     ReactiveFormsModule,
     FormsModule,
     CamposModule,
-    InfiniteScrollModule // <--
+    InfiniteScrollModule
   ],
-  declarations: [CadastroFilmesComponent, ListagemFilmesComponent]
+  declarations: [CadastroFilmesComponent, ListagemFilmesComponent, VisualizarFilmesComponent]
 })
 export class FilmesModule { }
