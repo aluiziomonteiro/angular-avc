@@ -91,26 +91,6 @@
       "genero": "Ação"
     },
     {
-      "titulo": "Mistério no Mediterrâneo",
-      "urlFoto": "https://m.media-amazon.com/images/M/MV5BNTA2YTI5YjUtZWI4Zi00NWQ5LWFiYmEtOTBmNTUyNDAwNjllXkEyXkFqcGdeQXVyNjIzNzM4NzA@._V1_UX182_CR0,0,182,268_AL_.jpg",
-      "dtLancamento": "2019-06-14T03:00:00.000Z",
-      "descricao": "A New York cop and his wife go on a European vacation to reinvigorate the spark in their marriage, but end up getting framed and on the run for the death of an elderly billionaire.",
-      "nota": 6,
-      "urlIMDb": "https://www.imdb.com/title/tt1618434/",
-      "genero": "Comédia",
-      "id": 10
-    },
-    {
-      "titulo": "Star Wars: A Ascensão Skywalker",
-      "urlFoto": "https://m.media-amazon.com/images/M/MV5BMDljNTQ5ODItZmQwMy00M2ExLTljOTQtZTVjNGE2NTg0NGIxXkEyXkFqcGdeQXVyODkzNTgxMDg@._V1_UX182_CR0,0,182,268_AL_.jpg",
-      "dtLancamento": "2019-12-19T03:00:00.000Z",
-      "descricao": "In Theaters Now\nAfter Palpatine mysteriously returns, the Resistance faces the First Order once more in the final chapter of the Skywalker saga.",
-      "nota": 6.9,
-      "urlIMDb": "https://www.imdb.com/title/tt2527338/?ref_=vi_md_ti",
-      "genero": "Aventura",
-      "id": 11
-    },
-    {
       "titulo": "Filme sem foto",
       "urlFoto": "",
       "dtLancamento": "2021-03-02T03:00:00.000Z",

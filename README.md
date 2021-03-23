@@ -3075,6 +3075,127 @@ ___
 
 ##### Excluindo os filmes
 
+Vamos adicionar os botões de editar e excluir.
+
+1 - Em **visualizar-filmes.component.html**, crie dois botões e invoque um método excluir:
+
+~~~typescript
+
+<mat-card>
+<mat-card-actions>
+<button color="accent" mat-raised-button>Editar</button>
+<button color="warn" mat-raised-button (click)="excluir()">Excluir</button>
+</mat-card-actions>
+</mat-card>
+~~~
+
+2 - Em **visualizar-filmes.component.ts**, vamos criar uma variável do tipo number para o id e faça os ajustes para que o `ngOnInit()` trabalhe com ele.
+
+~~~typescript
+ngOnInit() {
+this.id = this.activatedRoute.snapshot.params['id'];
+this.visualizar();
+}
+~~~
+
+
+3 - No **filmes-service.ts**, criaremos o método para deletar:
+~~~typescript
+excluir(id: number): Observable <void>{
+return this.http.delete<void>(url + id);
+}
+~~~
+
+4 - Em nosso método de excluir do **visualizar-filmes.component.ts**, faremos algo parecido com o que foi feito em salvar cadastro filmes, só que ao contrário. Primeiro vamos exibir a mensagem e depois excluir.
+
+~~~typescript
+excluir(): void {
+const config = {
+data: {
+titulo: 'Você tem certeza que deseja excluir?',
+descricao: 'Caso você tenha certeza que deseja excluir, clique no botão OK',
+corBtnSucesso: 'warn',
+corBtnCancelar: 'primary',
+possuirBtnFechar: true
+} as Alerta
+};
+const dialogRef = this.dialog.open(AlertaComponent, config);
+
+dialogRef.afterClosed().subscribe((opcao: boolean) => {
+if (opcao ){
+this.filmesService.excluir(this.id)
+.subscribe(() => this.router.navigateByUrl('/filmes'));
+} 
+});
+}
+~~~
+
+A classe completa fica assim:
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { AlertaComponent } from 'src/app/shared/components/alerta/alerta.component';
+import { Alerta } from 'src/app/shared/models/alerta';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-visualizar-filmes',
+templateUrl: './visualizar-filmes.component.html',
+styleUrls: ['./visualizar-filmes.component.scss']
+})
+export class VisualizarFilmesComponent implements OnInit {
+[x: string]: any;
+readonly semFoto = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEemlgFtRl2mVB_7J_ypS-JHchAMWKXNkANw&usqp=CAU';
+filme: Filme;
+id: number;
+
+constructor(public dialog: MatDialog,
+private activatedRoute: ActivatedRoute,
+private router : Router,
+private filmesService: FilmesService
+) { }
+
+ngOnInit() {
+this.id = this.activatedRoute.snapshot.params['id'];
+this.visualizar();
+}
+
+excluir(): void {
+const config = {
+data: {
+titulo: 'Você tem certeza que deseja excluir?',
+descricao: 'Caso você tenha certeza que deseja excluir, clique no botão OK',
+corBtnSucesso: 'warn',
+corBtnCancelar: 'primary',
+possuirBtnFechar: true
+} as Alerta
+};
+const dialogRef = this.dialog.open(AlertaComponent, config);
+
+dialogRef.afterClosed().subscribe((opcao: boolean) => {
+if (opcao ){
+this.filmesService.excluir(this.id)
+.subscribe(() => this.router.navigateByUrl('/filmes'));
+} 
+});
+}
+reiniciarForm() {
+throw new Error('Method not implemented.');
+}
+
+
+private visualizar(): void {
+this.filmesService.visualizar(this.id).subscribe((filme:Filme) => this.filme = filme);
+}
+}
+~~~
+
+Teste o app:
+
+![img/151.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/151.png)
 
 
 
@@ -3088,12 +3209,10 @@ ___
 
 
 
-
-
-
-##### Enviando um filme para a pagina de edição
+##### Enviando um filme para a página de edição
 
 ##### Editando os filmes
+
 
 
 

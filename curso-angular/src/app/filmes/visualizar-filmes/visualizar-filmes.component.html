@@ -5,7 +5,14 @@
   <mat-list-item>Descrição: {{filme.descricao}}</mat-list-item>
   <mat-list-item>Nota: <a [href]="filme.urlIMDb" target="_blank">{{filme.nota}}</a> </mat-list-item>
   <img mat-card-image [src]="filme.urlFoto || semFoto">
-</mat-list>>
+</mat-list>
+
+<mat-card>
+  <mat-card-actions>
+    <button color="accent" mat-raised-button>Editar</button>
+    <button color="warn" mat-raised-button (click)="excluir()">Excluir</button>
+  </mat-card-actions>
+</mat-card>
 
 <ng-template #semFilme>
   <h1 class="main-div full-width" >Nenhum registro encontrado</h1>
