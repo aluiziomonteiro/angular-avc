@@ -3197,55 +3197,310 @@ Teste o app:
 
 ![img/151.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/151.png)
 
-
-
-
-
-
-
-
-
-
-
-
+___
 
 ##### Enviando um filme para a página de edição
+
+
+Vamos cuidar da parte de edição de filmes.
+1 - Primeiro vamos adicionar a chamada do método `editar()` no template:
+
+~~~html
+<button color="accent" mat-raised-button (click)="editar()">Editar</button>
+~~~
+
+2 - Em **visualizar-filmes.component.ts**, vamos criar o método `editar()`. Aqui nós vamos aproveitar o nosso formulário de cadastro fazendo com que ele seja carregado com todos os campos já populados. 
+
+~~~typescript
+
+editar(): void {
+this.router.navigateByUrl('/filmes/cadastro/' + this.id);
+}
+~~~
+
+3 - Precisamos organizar as nossas rotas pois agora é necessário uma rota para o cadastro que também contenha um id:
+
+~~~typescript
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { FilmesModule } from './filmes/filmes.module';
+import { CadastroFilmesComponent } from './filmes/cadastro-filmes/cadastro-filmes.component';
+import { ListagemFilmesComponent } from './filmes/listagem-filmes/listagem-filmes.component';
+import { VisualizarFilmesComponent } from './filmes/visualizar-filmes/visualizar-filmes.component';
+
+const routes: Routes = [
+{
+path: '',
+redirectTo: 'filmes',
+pathMatch: 'full'
+},
+{
+path: 'filmes',
+children: [
+{
+path: '',
+component: ListagemFilmesComponent
+},
+{
+path: 'cadastro',
+children: [
+{
+path: '',
+component: CadastroFilmesComponent
+},
+{
+path: ':id',
+component: CadastroFilmesComponent
+}
+]
+},
+{
+path: ':id',
+component: VisualizarFilmesComponent,
+pathMatch: 'full'
+}
+]
+},
+{ path: '**', redirectTo: 'filmes' },
+
+];
+
+@NgModule({
+imports: [
+RouterModule.forRoot(routes),
+FilmesModule
+],
+exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+
+~~~
+
+4 - Em **cadastro-filmes.component.ts**, vamos criar um id e mais dois métodos. Um para abrir o cadastro já preenchido e outro para abrir tudo em branco:
+
+~~~typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FilmesService } from 'src/app/core/filmes.service';
+import { AlertaComponent } from 'src/app/shared/components/alerta/alerta.component';
+import { ValidarCamposService } from 'src/app/shared/components/campos/validar-campos.service';
+import { Alerta } from 'src/app/shared/models/alerta';
+import { Filme } from 'src/app/shared/models/filme';
+
+@Component({
+selector: 'dio-cadastro-filmes',
+templateUrl: './cadastro-filmes.component.html',
+styleUrls: ['./cadastro-filmes.component.scss']
+})
+export class CadastroFilmesComponent implements OnInit {
+
+id: number;
+cadastro: FormGroup;
+generos: Array<string>;
+
+constructor(public validacao: ValidarCamposService,
+public dialog: MatDialog,
+private fb: FormBuilder,
+private filmesService: FilmesService, 
+private router: Router,
+private activatedRoute: ActivatedRoute
+) { }
+
+get f(){
+return this.cadastro.controls;
+}
+
+ngOnInit() {
+this.id = this.activatedRoute.snapshot.params['id'];
+// se existir filme
+if (this.id) {
+this.filmesService.visualizar(this.id)
+.subscribe((filme: Filme) => this.criarFormulario(filme));
+} else { // se não, então crie em branco
+this.criarFormulario(this.criarFilmeEmBranco());
+}
+
+}
+
+submit(): void{ 
+this.cadastro.markAllAsTouched(); 
+if(this.cadastro.invalid){ 
+return; 
+}
+
+const filme = this.cadastro.getRawValue() as Filme;
+this.salvar(filme);
+}
+
+reiniciarForm(): void{ 
+this.cadastro.reset();
+}
+
+private criarFilmeEmBranco(): Filme {
+return {
+id: null,
+titulo: null,
+dtLancamento: null,
+urlFoto: null,
+descricao: null,
+nota: null,
+urlIMDb: null,
+genero: null
+
+} as Filme
+}
+
+private criarFormulario(filme: Filme): void {
+this.cadastro = this.fb.group({
+
+titulo: [filme.titulo,[Validators.required, Validators.minLength(2), Validators.maxLength(256)]],
+urlFoto: [filme.urlFoto, [Validators.minLength(10)]],
+dtLancamento: [filme.dtLancamento, [Validators.required]],
+descricao: [filme.descricao],
+nota: [filme.nota, [Validators.required, Validators.min(0), Validators.max(10)]],
+urlIMDb: [filme.urlIMDb, [Validators.minLength(10)]],
+genero: [filme.genero, [Validators.required]]
+});
+this.generos = [ 'Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror' ];
+}
+
+private salvar(filme: Filme): void {
+this.filmesService.salvar(filme).subscribe(() => { 
+const config = {
+data: {
+btnSucesso: 'ir para a listagem',
+btnCancelar: 'Cadastrar um novo filme',
+corBtnCancelar: 'primary',
+possuirBtnFechar: true
+} as Alerta
+};
+const dialogRef = this.dialog.open(AlertaComponent, config);
+
+dialogRef.afterClosed().subscribe((opcao: boolean) => {
+if (opcao ){
+this.router.navigateByUrl('filmes');
+} else {
+this.reiniciarForm();
+}
+})
+},
+() => {
+const config = {
+data: {
+titulo: 'Erro ao salvar o registro!',
+descricao: 'Não conseguimos salvar o seu registro. Tente mais tarde!',
+corBtnSucesso: 'warn',
+btnSucesso: 'Fechar'
+} as Alerta
+};
+this.dialog.open(AlertaComponent, config);
+});
+}
+}
+
+~~~
+
 
 ##### Editando os filmes
 
 
+Vamos compreender como está primeiro o nosso salvar do arquivo **cadastro-filmes.component.ts**.
+
+Quando a gente manda submeter os dados do formulário, ele pega o filme e chama o método salvar:
+
+~~~typescript
+ngOnInit() {
+this.id = this.activatedRoute.snapshot.params['id'];
+// se existir filme
+if (this.id) {
+filme.id = this.id;
+this.filmesService.visualizar(this.id)
+.subscribe((filme: Filme) => this.criarFormulario(filme));
+} else { // se não, então crie em branco
+this.criarFormulario(this.criarFilmeEmBranco());
+}
+
+}
+
+~~~
+
+1 - Encima disso, nós vamos ter que fazer uma validação para saber se o que queremos e salvar ou editar. Para isso, basta verificar se existe um id. Caso exista, então isso será um editar. Caso não exista, então será um novo filme cujo o id será criado pelo back-end:
+
+~~~typescript
+submit(): void{ 
+this.cadastro.markAllAsTouched(); 
+if(this.cadastro.invalid){ 
+return; 
+}
+
+const filme = this.cadastro.getRawValue() as Filme;
+
+if (this.id) {
+this.editar(filme);
+} else {
+this.salvar(filme);
+}
+}
+
+~~~
+
+2 - Vamos criar o `editar()` em **cadastro-filmes.component.ts**. Ele é bastante parecido com o `salvar()` que já temos:
+
+~~~typescript
+private editar(filme: Filme): void {
+this.filmeService.editar(filme).subscribe(() => {
+const config = {
+data: {
+descricao: 'Seu registro foi atualizado com sucesso!',
+btnSucesso: 'Ir para a listagem',
+} as Alerta
+};
+const dialogRef = this.dialog.open(AlertaComponent, config);
+dialogRef.afterClosed().subscribe(() => this.router.navigateByUrl('filmes'));
+},
+() => {
+const config = {
+data: {
+titulo: 'Erro ao editar o registro!',
+descricao: 'Não conseguimos editar seu registro, favor tentar novamente mais tarde',
+corBtnSucesso: 'warn',
+btnSucesso: 'Fechar'
+} as Alerta
+};
+this.dialog.open(AlertaComponent, config);
+});
+}
+
+}
+
+~~~
+
+
+3 - Agora em **filmes.service.ts**, crie o `editar()` via `put`:
+
+~~~typescript
+editar(filme: Filme): Observable <Filme> {
+return this.http.put<Filme>(url + filme.id, filme);
+} 
+~~~
+
+
+Teste:
+
+![img/152.png](https://github.com/aluiziomonteiro/angular-avc/blob/master/img/152.png)
 
 
 
+Prontinho! Concluímos nosso CRUD e ele com certeza servirá para criações de futuras aplicações de qualidade finíssima!
 
+insejunior@gmail.com
+devaluizio@gmail.com
+___
+___
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 
 
 
